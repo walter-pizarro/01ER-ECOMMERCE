@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce Moderno - Vista Previa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">eCommerce Moderno</h1>
+                    <span class="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">DEMO</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Buscar productos..." 
+                               class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 h-4 w-4 text-gray-400"></i>
+                    </div>
+                    <button class="relative p-2 text-gray-600 hover:text-gray-900">
+                        <i data-lucide="shopping-cart" class="h-6 w-6"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                    <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-gray-100 border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8 py-3">
+                <button class="category-btn text-gray-700 hover:text-blue-600 font-medium" data-category="">
+                    Todos los Productos
+                </button>
+                <button class="category-btn text-gray-700 hover:text-blue-600" data-category="2">
+                    Smartphones
+                </button>
+                <button class="category-btn text-gray-700 hover:text-blue-600" data-category="3">
+                    Laptops
+                </button>
+                <button class="category-btn text-gray-700 hover:text-blue-600" data-category="4">
+                    Ropa
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg text-white p-8 mb-8">
+            <div class="max-w-3xl">
+                <h2 class="text-3xl font-bold mb-4">Bienvenido al eCommerce Moderno</h2>
+                <p class="text-lg mb-6">Descubre nuestra selección de productos con la mejor tecnología y experiencia de usuario.</p>
+                <div class="flex space-x-4">
+                    <div class="bg-white/20 rounded-lg p-4">
+                        <div class="text-2xl font-bold" id="statsProducts">4</div>
+                        <div class="text-sm">Productos</div>
+                    </div>
+                    <div class="bg-white/20 rounded-lg p-4">
+                        <div class="text-2xl font-bold" id="statsCustomers">3</div>
+                        <div class="text-sm">Clientes</div>
+                    </div>
+                    <div class="bg-white/20 rounded-lg p-4">
+                        <div class="text-2xl font-bold" id="statsOrders">1</div>
+                        <div class="text-sm">Órdenes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="mb-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Productos Destacados</h3>
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Loading skeleton -->
+                <div class="loading bg-white rounded-lg shadow-md p-4">
+                    <div class="bg-gray-300 h-48 rounded-lg mb-4"></div>
+                    <div class="bg-gray-300 h-4 rounded mb-2"></div>
+                    <div class="bg-gray-300 h-4 rounded w-3/4"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Iniciar Sesión</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="h-6 w-6"></i>
+                    </button>
+                </div>
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="email" value="admin@ecommerce.com" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                        <input type="password" id="password" value="admin123"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                        Iniciar Sesión
+                    </button>
+                </form>
+                <div class="mt-4 text-sm text-gray-600">
+                    <p><strong>Usuarios de prueba:</strong></p>
+                    <p>Admin: admin@ecommerce.com / admin123</p>
+                    <p>Cliente: juan.perez@email.com / user123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden z-50">
+        <div class="flex items-center">
+            <i data-lucide="check-circle" class="h-5 w-5 mr-2"></i>
+            <span id="toastMessage">Mensaje</span>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'https://5000-imncxca1uzm7el5srk2tu-e50a1c2e.manusvm.computer';
+        
+        // Global state
+        let currentUser = null;
+        let products = [];
+        let cart = [];
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // DOM Elements
+        const productsGrid = document.getElementById('productsGrid');
+        const loginModal = document.getElementById('loginModal');
+        const loginBtn = document.getElementById('loginBtn');
+        const closeModal = document.getElementById('closeModal');
+        const loginForm = document.getElementById('loginForm');
+        const searchInput = document.getElementById('searchInput');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const toast = document.getElementById('toast');
+
+        // Event Listeners
+        loginBtn.addEventListener('click', () => {
+            if (currentUser) {
+                logout();
+            } else {
+                loginModal.classList.remove('hidden');
+            }
+        });
+
+        closeModal.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+        });
+
+        loginForm.addEventListener('submit', handleLogin);
+        searchInput.addEventListener('input', debounce(handleSearch, 300));
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.category;
+                loadProducts(category);
+                
+                // Update active state
+                categoryBtns.forEach(b => b.classList.remove('text-blue-600', 'font-semibold'));
+                btn.classList.add('text-blue-600', 'font-semibold');
+            });
+        });
+
+        // Functions
+        async function loadProducts(categoryId = '') {
+            try {
+                showLoading();
+                const url = categoryId ? 
+                    `${API_BASE}/api/products?category_id=${categoryId}` : 
+                    `${API_BASE}/api/products`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                products = data.products;
+                renderProducts(products);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showToast('Error cargando productos', 'error');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/stats`);
+                const stats = await response.json();
+                
+                document.getElementById('statsProducts').textContent = stats.total_products;
+                document.getElementById('statsCustomers').textContent = stats.total_customers;
+                document.getElementById('statsOrders').textContent = stats.total_orders;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function renderProducts(products) {
+            if (products.length === 0) {
+                productsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i data-lucide="package" class="h-16 w-16 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No se encontraron productos</h3>
+                        <p class="text-gray-500">Intenta con otros términos de búsqueda</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            productsGrid.innerHTML = products.map(product => `
+                <div class="product-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                        <i data-lucide="image" class="h-16 w-16 text-gray-400"></i>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">${product.name}</h4>
+                        <p class="text-sm text-gray-600 mb-2">${product.description}</p>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                ${Array(5).fill().map((_, i) => 
+                                    `<i data-lucide="star" class="h-4 w-4 ${i < Math.floor(product.rating) ? 'fill-current' : ''}"></i>`
+                                ).join('')}
+                            </div>
+                            <span class="text-sm text-gray-500 ml-2">(${product.review_count})</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                ${product.sale_price && product.sale_price !== product.price ? 
+                                    `<span class="text-lg font-bold text-green-600">$${formatPrice(product.sale_price)}</span>
+                                     <span class="text-sm text-gray-500 line-through ml-2">$${formatPrice(product.price)}</span>` :
+                                    `<span class="text-lg font-bold text-gray-900">$${formatPrice(product.price)}</span>`
+                                }
+                            </div>
+                            <span class="text-sm text-gray-500">${product.stock_quantity} disponibles</span>
+                        </div>
+                        <button onclick="addToCart(${product.id})" 
+                                class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function showLoading() {
+            productsGrid.innerHTML = Array(8).fill().map(() => `
+                <div class="loading bg-white rounded-lg shadow-md p-4">
+                    <div class="bg-gray-300 h-48 rounded-lg mb-4"></div>
+                    <div class="bg-gray-300 h-4 rounded mb-2"></div>
+                    <div class="bg-gray-300 h-4 rounded w-3/4 mb-2"></div>
+                    <div class="bg-gray-300 h-6 rounded"></div>
+                </div>
+            `).join('');
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.user;
+                    localStorage.setItem('token', data.token);
+                    loginModal.classList.add('hidden');
+                    updateLoginButton();
+                    showToast(`Bienvenido, ${currentUser.first_name}!`);
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Error de conexión', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('token');
+            updateLoginButton();
+            showToast('Sesión cerrada');
+        }
+
+        function updateLoginButton() {
+            if (currentUser) {
+                loginBtn.textContent = `${currentUser.first_name} (Cerrar Sesión)`;
+                loginBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                loginBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+            } else {
+                loginBtn.textContent = 'Iniciar Sesión';
+                loginBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                loginBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }
+        }
+
+        async function handleSearch(e) {
+            const query = e.target.value.trim();
+            if (query.length === 0) {
+                loadProducts();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                renderProducts(data.products);
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        async function addToCart(productId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/cart/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('Producto agregado al carrito');
+                    // Update cart count (simulation)
+                    const cartCount = document.querySelector('.absolute.-top-1.-right-1');
+                    cartCount.textContent = parseInt(cartCount.textContent) + 1;
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                showToast('Error agregando al carrito', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toastElement = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toastElement.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-red-500' : 'bg-green-500'
+            } text-white`;
+            
+            toastElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toastElement.classList.add('hidden');
+            }, 3000);
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('es-CL').format(price);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            loadStats();
+            
+            // Check for existing token
+            const token = localStorage.getItem('token');
+            if (token) {
+                // In a real app, we would validate the token
+                // For demo purposes, we'll just show as logged in
+                currentUser = { first_name: 'Usuario', role: 'customer' };
+                updateLoginButton();
+            }
+        });
+    </script>
+</body>
+</html>
+
