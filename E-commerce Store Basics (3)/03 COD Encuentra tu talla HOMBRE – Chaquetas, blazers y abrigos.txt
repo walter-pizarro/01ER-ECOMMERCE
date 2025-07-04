@@ -1,0 +1,145 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
+
+/* Encuentra tu talla – Pantalones / Jeans HOMBRE | v0.1 */
+
+// --- Iconos SVG --------------------------------------------
+const JeansIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M6 2h12l-1 7-2 13H9L7 9 6 2z" />
+    <path d="M9 9h6" />
+  </svg>
+);
+
+const TrousersIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M8 2h8l2 20h-4l-1-10-2 10H6L8 2z" />
+  </svg>
+);
+
+const CargoIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M7 2h10l2 20H5L7 2z" />
+    <path d="M7 11h10" />
+    <path d="M9 16h6" />
+  </svg>
+);
+
+// ---------------- Tabla de tallas (waist cm) ----------------
+const TABLE = [
+  { min: 80, max: 85, eu: 46, cl: 46, us: 30, letter: "S" },
+  { min: 86, max: 90, eu: 48, cl: 48, us: 32, letter: "S" },
+  { min: 91, max: 95, eu: 50, cl: 50, us: 34, letter: "M" },
+  { min: 96, max: 100, eu: 52, cl: 52, us: 36, letter: "M" },
+  { min: 101, max: 105, eu: 54, cl: 54, us: 38, letter: "L" },
+  { min: 106, max: 110, eu: 56, cl: 56, us: 40, letter: "XL" },
+  { min: 111, max: 120, eu: 58, cl: 58, us: 42, letter: "XXL" },
+];
+
+const MIN_CM = TABLE[0].min;
+const MAX_CM = TABLE[TABLE.length - 1].max;
+
+function findSize(cm) {
+  if (isNaN(cm) || cm <= 0) return { error: "Ingresa una medida válida" };
+  const row = TABLE.find((r) => cm >= r.min && cm <= r.max);
+  return row || { error: "Medida fuera de rango" };
+}
+
+export default function FindMySizeJeansMen() {
+  const [cm, setCm] = useState("");
+  const result = cm ? findSize(parseFloat(cm)) : null;
+
+  return (
+    <Card className="w-full max-w-md">
+      <CardContent className="p-6 space-y-5">
+        <h3 className="text-xl font-semibold text-center">
+          Encuentra tu talla – Pantalones / Jeans HOMBRE
+        </h3>
+        <p className="text-xs text-center text-muted-foreground">
+          Ingresa tu contorno de cintura (rango {MIN_CM}-{MAX_CM} cm)
+        </p>
+
+        <TooltipProvider delayDuration={200} disableHoverableContent>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={MIN_CM}
+              max={MAX_CM}
+              step="0.1"
+              placeholder={`Cintura (${MIN_CM}-${MAX_CM} cm)`}
+              value={cm}
+              onChange={(e) => setCm(e.target.value)}
+              className="flex-1"
+            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-5 h-5 text-gray-500 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-sm leading-snug">
+                Mide alrededor de la cintura, a la altura donde llevas el pantalón.
+                Mantén la cinta recta y sin apretar. Valores válidos: {MIN_CM}-{MAX_CM} cm.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+
+        {result && (
+          <div className="text-center text-sm">
+            {result.error ? (
+              <span className="text-red-600 font-medium">{result.error}</span>
+            ) : (
+              <div className="space-y-1">
+                <p>
+                  <strong>EU:</strong> {result.eu} &nbsp;| <strong>CL:</strong> {result.cl}
+                </p>
+                <p>
+                  <strong>US (waist "):</strong> {result.us} &nbsp;| <strong>Letra:</strong> {result.letter}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <Button
+          className="w-full mt-2"
+          disabled={!result || result.error}
+          onClick={() => {
+            if (result && !result.error) {
+              window.dispatchEvent(new CustomEvent("size:select", { detail: result }));
+            }
+          }}
+        >
+          Usar talla sugerida
+        </Button>
+
+        <div
+          className="flex justify-center gap-4 mt-4 text-gray-400"
+          aria-label="Tipos de prenda"
+        >
+          <JeansIcon className="w-6 h-6" aria-label="Jeans" />
+          <TrousersIcon className="w-6 h-6" aria-label="Pantalón" />
+          <CargoIcon className="w-6 h-6" aria-label="Cargo" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --------------------------- Dev tests ---------------------------
+if (process.env.NODE_ENV === "development") {
+  const assert = (cond, msg) => {
+    if (!cond) console.error(msg);
+  };
+  assert(findSize(82).eu === 46, "82 cm → EU 46 (S)");
+  assert(findSize(108).us === 40, "108 cm → US 40 (XL)");
+  assert(findSize(75).error, "75 cm fuera de rango debe dar error");
+}

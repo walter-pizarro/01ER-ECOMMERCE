@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Costos para Señaléticas v3.0</title>
+    <!-- Inclusión de Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter para una mejor legibilidad -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para mejorar la apariencia */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .final-price-card {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .input-field {
+            @apply w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+        }
+        label {
+            @apply block text-sm font-medium text-gray-600 mb-1;
+        }
+        .highlight-value {
+             @apply font-bold text-lg text-blue-700;
+        }
+        /* Estilos para la tabla de insumos */
+        #materialsTable th, #materialsTable td {
+            @apply px-3 py-2 text-sm text-left align-middle;
+        }
+        #materialsTable th {
+             @apply font-semibold bg-gray-100;
+        }
+        #materialsTable tr:nth-child(even) {
+            @apply bg-gray-50;
+        }
+        #materialsTable input {
+            @apply input-field py-1;
+        }
+        .price-sqm {
+            @apply font-semibold text-gray-700 bg-gray-100 px-3 py-2 rounded-md;
+        }
+        /* Modal de confirmación */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        <!-- Título principal de la aplicación -->
+        <header class="text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Sistema de Gestión de Costos de Señaléticas</h1>
+            <p class="mt-2 text-md text-gray-600">Gestione sus insumos y calcule precios de forma precisa y dinámica.</p>
+        </header>
+
+        <!-- SECCIÓN DE GESTIÓN DE INSUMOS -->
+        <div id="gestor-insumos" class="card">
+            <h2 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-4">Gestor de Insumos y Materiales</h2>
+            <div class="overflow-x-auto mb-6">
+                <table id="materialsTable" class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Insumo</th>
+                            <th>Tipo</th>
+                            <th>Precio Unit. (CLP)</th>
+                            <th>Ancho (m)</th>
+                            <th>Alto/Largo (m)</th>
+                            <th>Espesor (mm)</th>
+                            <th>Valor m² (CLP)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="materialsTableBody">
+                        <!-- Las filas se generarán dinámicamente con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-lg text-gray-700 mb-3">Agregar Nuevo Insumo</h3>
+                <form id="addMaterialForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                    <div class="lg:col-span-2">
+                        <label for="newMaterialName">Nombre</label>
+                        <input type="text" id="newMaterialName" class="input-field" required>
+                    </div>
+                    <div>
+                        <label for="newMaterialType">Tipo</label>
+                        <select id="newMaterialType" class="input-field" required>
+                            <option value="Sustrato">Sustrato</option>
+                            <option value="Grafica">Gráfica</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="newMaterialPrice">Precio Unit.</label>
+                        <input type="number" id="newMaterialPrice" class="input-field" required>
+                    </div>
+                    <div>
+                        <label for="newMaterialWidth">Ancho (m)</label>
+                        <input type="number" step="0.01" id="newMaterialWidth" class="input-field" required>
+                    </div>
+                    <div>
+                        <label for="newMaterialHeight">Alto/Largo (m)</label>
+                        <input type="number" step="0.01" id="newMaterialHeight" class="input-field" required>
+                    </div>
+                     <div>
+                        <label for="newMaterialThickness">Espesor (mm)</label>
+                        <input type="number" step="0.1" id="newMaterialThickness" class="input-field" placeholder="Opcional">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Agregar Insumo
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE LA CALCULADORA -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Columna 1: Entradas y Parámetros -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="card">
+                    <h2 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4">Parámetros Generales</h2>
+                    <div class="space-y-4">
+                        <div><label for="costoMOD">Costo Hora-Hombre (MOD) CLP</label><input type="number" id="costoMOD" class="input-field" value="8500"></div>
+                        <div><label for="mermaMaterial">Merma de Material (%)</label><input type="number" id="mermaMaterial" class="input-field" value="15"></div>
+                        <div><label for="porcentajeCIF">Costos Indirectos Fab. (CIF) (%)</label><input type="number" id="porcentajeCIF" class="input-field" value="15"></div>
+                        <div><label for="porcentajeGAV">Gastos Adm. y Ventas (GAV) (%)</label><input type="number" id="porcentajeGAV" class="input-field" value="20"></div>
+                        <div><label for="porcentajeUtilidad">Utilidad Deseada (%)</label><input type="number" id="porcentajeUtilidad" class="input-field" value="25"></div>
+                        <div><label for="tasaIVA">IVA (%)</label><input type="number" id="tasaIVA" class="input-field" value="19"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4">Datos de la Señalética</h2>
+                    <div class="space-y-4">
+                        <div><label for="ancho">Ancho (cm)</label><input type="number" id="ancho" class="input-field" value="60"></div>
+                        <div><label for="alto">Alto (cm)</label><input type="number" id="alto" class="input-field" value="90"></div>
+                        <div><label for="cantidad">Cantidad de Señaléticas</label><input type="number" id="cantidad" class="input-field" value="1"></div>
+                        <div><label for="sustrato">Material del Sustrato</label><select id="sustrato" class="input-field"></select></div>
+                        <div><label for="grafica">Material de la Gráfica</label><select id="grafica" class="input-field"></select></div>
+                        <div><label for="tiempoMOD">Tiempo Total MOD (Horas)</label><input type="number" id="tiempoMOD" step="0.1" class="input-field" value="0.75"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 2: Resultados y Desglose de Costos -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="card">
+                    <h2 class="text-2xl font-bold text-blue-600 mb-4">Resultados del Análisis de Costos (por unidad)</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div class="space-y-4"><h3 class="text-lg font-semibold text-gray-800 pb-1 border-b">Costos Directos</h3><div class="flex justify-between items-center"><span class="text-gray-600">Costo Sustrato:</span><span id="resCostoSustrato" class="font-semibold text-gray-900"></span></div><div class="flex justify-between items-center"><span class="text-gray-600">Costo Gráfica:</span><span id="resCostoGrafica" class="font-semibold text-gray-900"></span></div><div class="flex justify-between items-center border-t pt-2"><span class="font-bold text-gray-600">Subtotal Materiales (MD):</span><span id="resSubtotalMD" class="highlight-value"></span></div><div class="flex justify-between items-center mt-4"><span class="text-gray-600">Costo Mano de Obra (MOD):</span><span id="resCostoMOD" class="font-semibold text-gray-900"></span></div><div class="flex justify-between items-center bg-blue-50 p-2 rounded-md"><span class="font-bold text-lg text-blue-800">Costo Directo Total:</span><span id="resCostoDirectoTotal" class="font-bold text-lg text-blue-800"></span></div></div>
+                        <div class="space-y-4"><h3 class="text-lg font-semibold text-gray-800 pb-1 border-b">Costos Indirectos y Totales</h3><div class="flex justify-between items-center"><span class="text-gray-600">Costos Indirectos (CIF):</span><span id="resCIF" class="font-semibold text-gray-900"></span></div><div class="flex justify-between items-center bg-green-50 p-2 rounded-md"><span class="font-bold text-lg text-green-800">Costo de Producción:</span><span id="resCostoProduccion" class="font-bold text-lg text-green-800"></span></div><div class="flex justify-between items-center mt-4"><span class="text-gray-600">Gastos Adm. y Venta (GAV):</span><span id="resGAV" class="font-semibold text-gray-900"></span></div><div class="flex justify-between items-center bg-yellow-50 p-2 rounded-md"><span class="font-bold text-lg text-yellow-800">Costo Total (Comercial):</span><span id="resCostoTotalComercial" class="font-bold text-lg text-yellow-800"></span></div></div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t-2 border-dashed">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                            <div class="final-price-card p-6"><h3 class="text-xl font-bold mb-4 text-white">Precio de Venta Sugerido</h3><div class="space-y-3"><div class="flex justify-between items-baseline"><span class="text-blue-100">Precio Venta Neto:</span><span id="resPrecioVentaNeto" class="text-2xl font-bold text-white"></span></div><div class="flex justify-between items-baseline"><span class="text-blue-100">IVA (<span id="ivaLabel"></span>%):</span><span id="resIVA" class="text-xl font-semibold text-white"></span></div><div class="flex justify-between items-baseline border-t border-blue-300 mt-2 pt-2"><span class="font-bold text-lg text-white">PRECIO FINAL PÚBLICO:</span><span id="resPrecioFinal" class="text-3xl font-extrabold text-white"></span></div></div></div>
+                            <div class="bg-gray-50 p-6 rounded-lg"><h3 class="text-lg font-semibold text-gray-800 mb-4">Análisis de Márgenes</h3><div class="space-y-3"><div class="flex justify-between"><span class="text-gray-600">Margen de Contribución:</span><span id="resMargenContribucion" class="font-semibold text-gray-900"></span></div><div class="flex justify-between"><span class="text-gray-600">Margen Bruto (Producción):</span><span id="resMargenBruto" class="font-semibold text-gray-900"></span></div><div class="flex justify-between"><span class="text-gray-600">Margen Neto (Utilidad):</span><span id="resMargenNeto" class="font-semibold text-gray-900"></span></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación (oculto por defecto) -->
+    <div id="confirmationModal" class="modal-overlay hidden">
+        <div class="card w-full max-w-sm"><h3 id="modalTitle" class="text-lg font-bold text-gray-800">Confirmar Acción</h3><p id="modalMessage" class="mt-2 text-gray-600">¿Está seguro?</p><div class="mt-6 flex justify-end space-x-4"><button id="modalCancel" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancelar</button><button id="modalConfirm" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Confirmar</button></div></div>
+    </div>
+
+    <script>
+    // --- BASE DE DATOS DE MATERIALES (Pre-cargada con su lista) ---
+    let materialsDB = [
+        // Sustratos
+        { id: 'gal-15', name: 'Acero Galvanizado 1.5mm', type: 'Sustrato', unitPrice: 43529, unitWidth: 1, unitHeight: 3, thickness: 1.5 },
+        { id: 'gal-20', name: 'Acero Galvanizado 2.0mm', type: 'Sustrato', unitPrice: 46638, unitWidth: 1, unitHeight: 3, thickness: 2.0 },
+        { id: 'gal-25', name: 'Acero Galvanizado 2.5mm', type: 'Sustrato', unitPrice: 58298, unitWidth: 1, unitHeight: 3, thickness: 2.5 },
+        { id: 'tro-30', name: 'Trovicel Zintra 3mm', type: 'Sustrato', unitPrice: 18500, unitWidth: 1.22, unitHeight: 2.44, thickness: 3.0 },
+        { id: 'tro-50', name: 'Trovicel Zintra 5mm', type: 'Sustrato', unitPrice: 30000, unitWidth: 1.22, unitHeight: 2.44, thickness: 5.0 }, // Precio estimado
+        { id: 'tro-70', name: 'Trovicel Zintra 7mm', type: 'Sustrato', unitPrice: 42000, unitWidth: 1.22, unitHeight: 2.44, thickness: 7.0 }, // Precio estimado
+        { id: 'foa-30', name: 'Plástico Foamex 3mm', type: 'Sustrato', unitPrice: 15000, unitWidth: 1.22, unitHeight: 2.44, thickness: 3.0 }, // Precio estimado
+        { id: 'foa-50', name: 'Plástico Foamex 5mm', type: 'Sustrato', unitPrice: 25000, unitWidth: 1.22, unitHeight: 2.44, thickness: 5.0 }, // Precio estimado
+        { id: 'foa-70', name: 'Plástico Foamex 7mm', type: 'Sustrato', unitPrice: 35000, unitWidth: 1.22, unitHeight: 2.44, thickness: 7.0 }, // Precio estimado
+        
+        // Gráficas (Vinilos)
+        { id: 'vin-gc-imp', name: 'Vinilo Reflectante Grado Comercial Impreso', type: 'Grafica', unitPrice: 125000, unitWidth: 0.62, unitHeight: 45, thickness: 0 },
+        { id: 'vin-gc', name: 'Vinilo Reflectante Grado Comercial', type: 'Grafica', unitPrice: 70000, unitWidth: 0.62, unitHeight: 45, thickness: 0 },
+        { id: 'vin-gi', name: 'Vinilo Adhesivo Grado Ingeniería', type: 'Grafica', unitPrice: 360000, unitWidth: 0.62, unitHeight: 45, thickness: 0 },
+        { id: 'vin-aip', name: 'Vinilo Reflectante Alta Intensidad Prismático', type: 'Grafica', unitPrice: 438000, unitWidth: 0.62, unitHeight: 45, thickness: 0 },
+        { id: 'vin-aip-f', name: 'Vinilo Reflectante AIP Fluorescente', type: 'Grafica', unitPrice: 494000, unitWidth: 0.62, unitHeight: 45, thickness: 0 }
+    ];
+
+    // --- LÓGICA DE LA APLICACIÓN ---
+    const formatCurrency = value => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(value);
+    const formatPercent = value => isNaN(value) || !isFinite(value) ? 'N/A' : new Intl.NumberFormat('es-CL', { style: 'percent', minimumFractionDigits: 1 }).format(value);
+
+    function renderMaterialsTable() {
+        const tableBody = document.getElementById('materialsTableBody');
+        tableBody.innerHTML = '';
+        materialsDB.forEach(material => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" value="${material.name}" class="material-input" data-id="${material.id}" data-prop="name"></td>
+                <td><span class="px-2 py-1 text-xs font-semibold rounded-full ${material.type === 'Sustrato' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">${material.type}</span></td>
+                <td><input type="number" value="${material.unitPrice}" class="material-input" data-id="${material.id}" data-prop="unitPrice"></td>
+                <td><input type="number" step="0.01" value="${material.unitWidth}" class="material-input" data-id="${material.id}" data-prop="unitWidth"></td>
+                <td><input type="number" step="0.01" value="${material.unitHeight}" class="material-input" data-id="${material.id}" data-prop="unitHeight"></td>
+                <td><input type="number" step="0.1" value="${material.thickness || ''}" class="material-input" data-id="${material.id}" data-prop="thickness" placeholder="N/A"></td>
+                <td><span class="price-sqm">${formatCurrency(material.pricePerSqm || 0)}</span></td>
+                <td>
+                    <button class="delete-material-btn text-red-500 hover:text-red-700" data-id="${material.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+        addTableEventListeners();
+    }
+    
+    function populateMaterialDropdowns() {
+        const sustratoSelect = document.getElementById('sustrato');
+        const graficaSelect = document.getElementById('grafica');
+        const currentSustrato = sustratoSelect.value;
+        const currentGrafica = graficaSelect.value;
+        sustratoSelect.innerHTML = '';
+        graficaSelect.innerHTML = '';
+        const sustratos = materialsDB.filter(m => m.type === 'Sustrato');
+        const graficas = materialsDB.filter(m => m.type === 'Grafica');
+        sustratos.forEach(s => { const option = document.createElement('option'); option.value = s.id; option.textContent = s.name; sustratoSelect.appendChild(option); });
+        graficas.forEach(g => { const option = document.createElement('option'); option.value = g.id; option.textContent = g.name; graficaSelect.appendChild(option); });
+        if(sustratos.some(s => s.id === currentSustrato)) sustratoSelect.value = currentSustrato;
+        if(graficas.some(g => g.id === currentGrafica)) graficaSelect.value = currentGrafica;
+    }
+    
+    function handleAddUpdateMaterial(event) {
+        event.preventDefault();
+        const name = document.getElementById('newMaterialName').value;
+        const type = document.getElementById('newMaterialType').value;
+        const price = parseFloat(document.getElementById('newMaterialPrice').value);
+        const width = parseFloat(document.getElementById('newMaterialWidth').value);
+        const height = parseFloat(document.getElementById('newMaterialHeight').value);
+        const thickness = parseFloat(document.getElementById('newMaterialThickness').value) || 0;
+
+        if (!name || isNaN(price) || isNaN(width) || isNaN(height)) { alert('Por favor, complete todos los campos correctamente.'); return; }
+
+        const newMaterial = { id: 'mat-' + Date.now(), name, type, unitPrice: price, unitWidth: width, unitHeight: height, thickness };
+        materialsDB.push(newMaterial);
+        
+        document.getElementById('addMaterialForm').reset();
+        updateAndRecalculate();
+    }
+    
+    function updateMaterial(id, prop, value) {
+        const material = materialsDB.find(m => m.id === id);
+        if (material) {
+            material[prop] = (prop === 'name' || prop === 'type') ? value : parseFloat(value) || 0;
+            updateAndRecalculate();
+        }
+    }
+
+    function showConfirmationModal(title, message, onConfirm) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        const modal = document.getElementById('confirmationModal');
+        modal.classList.remove('hidden');
+        const confirmBtn = document.getElementById('modalConfirm');
+        const cancelBtn = document.getElementById('modalCancel');
+        const confirmHandler = () => { onConfirm(); hideModal(); };
+        const cancelHandler = () => { hideModal(); };
+        const hideModal = () => { modal.classList.add('hidden'); confirmBtn.removeEventListener('click', confirmHandler); cancelBtn.removeEventListener('click', cancelHandler); };
+        confirmBtn.addEventListener('click', confirmHandler, { once: true });
+        cancelBtn.addEventListener('click', cancelHandler, { once: true });
+    }
+
+    function deleteMaterial(id) {
+        const material = materialsDB.find(m => m.id === id);
+        showConfirmationModal('Eliminar Insumo', `¿Está seguro de que desea eliminar "${material.name}"?`,
+            () => { materialsDB = materialsDB.filter(m => m.id !== id); updateAndRecalculate(); });
+    }
+    
+    function addTableEventListeners() {
+        document.querySelectorAll('.material-input').forEach(input => {
+            input.addEventListener('change', (e) => { updateMaterial(e.target.dataset.id, e.target.dataset.prop, e.target.value); });
+        });
+        document.querySelectorAll('.delete-material-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => { deleteMaterial(e.currentTarget.dataset.id); });
+        });
+    }
+
+    function updateAndRecalculate() {
+        calculatePricePerSqm();
+        renderMaterialsTable();
+        populateMaterialDropdowns();
+        calculateCosts();
+    }
+
+    function calculateCosts() {
+        const porcUtilidad = (parseFloat(document.getElementById('porcentajeUtilidad').value) || 0) / 100;
+        const ancho = parseFloat(document.getElementById('ancho').value) || 0;
+        const alto = parseFloat(document.getElementById('alto').value) || 0;
+        const tiempoMOD = parseFloat(document.getElementById('tiempoMOD').value) || 0;
+        const costoHoraMOD = parseFloat(document.getElementById('costoMOD').value) || 0;
+        const porcMerma = (parseFloat(document.getElementById('mermaMaterial').value) || 0) / 100;
+        const porcCIF = (parseFloat(document.getElementById('porcentajeCIF').value) || 0) / 100;
+        const porcGAV = (parseFloat(document.getElementById('porcentajeGAV').value) || 0) / 100;
+        const porcIVA = (parseFloat(document.getElementById('tasaIVA').value) || 0) / 100;
+        const sustrato = materialsDB.find(m => m.id === document.getElementById('sustrato').value);
+        const grafica = materialsDB.find(m => m.id === document.getElementById('grafica').value);
+
+        if (!sustrato || !grafica) return;
+
+        const areaM2 = (ancho * alto) / 10000;
+        const costoSustrato = areaM2 * sustrato.pricePerSqm * (1 + porcMerma);
+        const costoGrafica = areaM2 * grafica.pricePerSqm * (1 + porcMerma);
+        const subtotalMD = costoSustrato + costoGrafica;
+        const costoMOD = tiempoMOD * costoHoraMOD;
+        const costoDirectoTotal = subtotalMD + costoMOD;
+        const costoCIF = costoDirectoTotal * porcCIF;
+        const costoProduccion = costoDirectoTotal + costoCIF;
+        const costoGAV = costoProduccion * porcGAV;
+        const costoTotalComercial = costoProduccion + costoGAV;
+
+        let precioVentaNeto, montoIVA, precioFinalPublico, margenContribucion, margenBruto, margenNeto;
+        if (porcUtilidad >= 1) {
+            precioVentaNeto = Infinity; montoIVA = Infinity; precioFinalPublico = Infinity;
+            margenContribucion = NaN; margenBruto = NaN; margenNeto = NaN;
+        } else {
+            precioVentaNeto = costoTotalComercial / (1 - porcUtilidad);
+            montoIVA = precioVentaNeto * porcIVA;
+            precioFinalPublico = precioVentaNeto + montoIVA;
+            margenContribucion = precioVentaNeto > 0 ? (precioVentaNeto - costoDirectoTotal) / precioVentaNeto : 0;
+            margenBruto = precioVentaNeto > 0 ? (precioVentaNeto - costoProduccion) / precioVentaNeto : 0;
+            margenNeto = precioVentaNeto > 0 ? (precioVentaNeto - costoTotalComercial) / precioVentaNeto : 0;
+        }
+        document.getElementById('ivaLabel').textContent = porcIVA * 100;
+        const displayInfinity = (val) => isFinite(val) ? formatCurrency(val) : "Inválido (Util. ≥ 100%)";
+        
+        document.getElementById('resCostoSustrato').textContent = formatCurrency(costoSustrato);
+        document.getElementById('resCostoGrafica').textContent = formatCurrency(costoGrafica);
+        document.getElementById('resSubtotalMD').textContent = formatCurrency(subtotalMD);
+        document.getElementById('resCostoMOD').textContent = formatCurrency(costoMOD);
+        document.getElementById('resCostoDirectoTotal').textContent = formatCurrency(costoDirectoTotal);
+        document.getElementById('resCIF').textContent = formatCurrency(costoCIF);
+        document.getElementById('resCostoProduccion').textContent = formatCurrency(costoProduccion);
+        document.getElementById('resGAV').textContent = formatCurrency(costoGAV);
+        document.getElementById('resCostoTotalComercial').textContent = formatCurrency(costoTotalComercial);
+
+        document.getElementById('resPrecioVentaNeto').textContent = displayInfinity(precioVentaNeto);
+        document.getElementById('resIVA').textContent = displayInfinity(montoIVA);
+        document.getElementById('resPrecioFinal').textContent = displayInfinity(precioFinalPublico);
+        
+        document.getElementById('resMargenContribucion').textContent = formatPercent(margenContribucion);
+        document.getElementById('resMargenBruto').textContent = formatPercent(margenBruto);
+        document.getElementById('resMargenNeto').textContent = formatPercent(margenNeto);
+    }
+    
+    function calculatePricePerSqm() {
+        materialsDB.forEach(material => {
+            material.pricePerSqm = (material.unitWidth * material.unitHeight > 0) ? material.unitPrice / (material.unitWidth * material.unitHeight) : 0;
+        });
+    }
+
+    function initializeApp() {
+        document.getElementById('addMaterialForm').addEventListener('submit', handleAddUpdateMaterial);
+        const calculatorInputs = document.querySelectorAll('#gestor-insumos ~ .grid input, #gestor-insumos ~ .grid select');
+        calculatorInputs.forEach(input => input.addEventListener('input', calculateCosts));
+        updateAndRecalculate();
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
