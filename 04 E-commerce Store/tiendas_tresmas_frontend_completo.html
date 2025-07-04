@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIENDAS TRESMAS - Panel Administrativo Profesional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* TIENDAS TRESMAS - PALETA CROMÁTICA UNIFICADA */
+        /* Color base oficial: #1e70b7 */
+        
+        :root {
+            /* === COLORES PRIMARIOS === */
+            --primary-base: #1e70b7;           /* Color base oficial */
+            --primary-50: #eff8ff;             /* Fondo muy claro */
+            --primary-100: #dbeafe;            /* Fondo claro */
+            --primary-200: #bfdbfe;            /* Fondo medio claro */
+            --primary-300: #93c5fd;            /* Bordes suaves */
+            --primary-400: #60a5fa;            /* Elementos secundarios */
+            --primary-500: #1e70b7;            /* Color principal */
+            --primary-600: #1a5d9a;            /* Hover principal */
+            --primary-700: #164a7d;            /* Activo/Pressed */
+            --primary-800: #123960;            /* Texto sobre claro */
+            --primary-900: #0e2843;            /* Texto principal */
+            
+            /* === COLORES NEUTROS === */
+            --neutral-50: #f8fafc;             /* Fondo página */
+            --neutral-100: #f1f5f9;            /* Fondo cards */
+            --neutral-200: #e2e8f0;            /* Bordes suaves */
+            --neutral-300: #cbd5e1;            /* Bordes normales */
+            --neutral-400: #94a3b8;            /* Texto secundario */
+            --neutral-500: #64748b;            /* Texto normal */
+            --neutral-600: #475569;            /* Texto importante */
+            --neutral-700: #334155;            /* Texto principal */
+            --neutral-800: #1e293b;            /* Texto títulos */
+            --neutral-900: #0f172a;            /* Texto máximo contraste */
+            
+            /* === COLORES SEMÁNTICOS === */
+            --success-50: #f0fdf4;
+            --success-500: #22c55e;
+            --success-600: #16a34a;
+            --success-700: #15803d;
+            
+            --warning-50: #fffbeb;
+            --warning-500: #f59e0b;
+            --warning-600: #d97706;
+            --warning-700: #b45309;
+            
+            --error-50: #fef2f2;
+            --error-500: #ef4444;
+            --error-600: #dc2626;
+            --error-700: #b91c1c;
+            
+            /* === SOMBRAS === */
+            --shadow-sm: 0 1px 2px 0 rgba(30, 112, 183, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(30, 112, 183, 0.1), 0 2px 4px -1px rgba(30, 112, 183, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(30, 112, 183, 0.1), 0 4px 6px -2px rgba(30, 112, 183, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(30, 112, 183, 0.1), 0 10px 10px -5px rgba(30, 112, 183, 0.04);
+            
+            /* === GRADIENTES === */
+            --gradient-primary: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+            --gradient-subtle: linear-gradient(135deg, var(--primary-50) 0%, var(--neutral-50) 100%);
+            
+            /* === TRANSICIONES === */
+            --transition-fast: 150ms ease-in-out;
+            --transition-normal: 250ms ease-in-out;
+            --transition-slow: 350ms ease-in-out;
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: var(--neutral-50);
+            color: var(--neutral-700);
+        }
+        
+        /* === COMPONENTES ACTUALIZADOS === */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--neutral-600);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: var(--transition-fast);
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .sidebar-item:hover { 
+            background: var(--primary-50);
+            color: var(--primary-600);
+        }
+        
+        .sidebar-item.active { 
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .sidebar-item svg {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.show { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .loading { display: none; }
+        .loading.show { display: inline-block; }
+        
+        .badge-new { 
+            background: var(--gradient-primary);
+            color: white; 
+            font-size: 0.75rem; 
+            padding: 0.25rem 0.5rem; 
+            border-radius: 0.375rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        /* === BOTONES === */
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
+            border: 1px solid var(--primary-500);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-600);
+            border-color: var(--primary-600);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary:active {
+            background: var(--primary-700);
+            border-color: var(--primary-700);
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-500);
+            border: 1px solid var(--primary-300);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-400);
+            color: var(--primary-600);
+        }
+        
+        /* === CARDS === */
+        .card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-normal);
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-200);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--gradient-subtle);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* === INPUTS === */
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            background: white;
+            color: var(--neutral-700);
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(30, 112, 183, 0.1);
+        }
+        
+        .input-field:hover {
+            border-color: var(--primary-400);
+        }
+        
+        /* === TABLAS === */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .table th {
+            background: var(--primary-50);
+            color: var(--primary-800);
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid var(--primary-200);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--neutral-200);
+            color: var(--neutral-700);
+        }
+        
+        .table tr:hover {
+            background: var(--primary-50);
+        }
+        
+        /* === BADGES === */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .badge-primary {
+            background: var(--primary-100);
+            color: var(--primary-700);
+        }
+        
+        .badge-success {
+            background: var(--success-50);
+            color: var(--success-700);
+        }
+        
+        .badge-warning {
+            background: var(--warning-50);
+            color: var(--warning-700);
+        }
+        
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .btn-primary,
+            .btn-secondary {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .card-header,
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.75rem;
+            }
+        }
+        
+        /* === SISTEMA DE ÍCONOS UNIFICADO === */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: var(--transition-fast);
+        }
+        
+        .icon-sm { width: 1rem; height: 1rem; }
+        .icon-md { width: 1.25rem; height: 1.25rem; }
+        .icon-lg { width: 1.5rem; height: 1.5rem; }
+        .icon-xl { width: 2rem; height: 2rem; }
+        
+        /* Colores de íconos */
+        .icon-primary { color: var(--primary-500); }
+        .icon-secondary { color: var(--neutral-500); }
+        .icon-success { color: var(--success-500); }
+        .icon-warning { color: var(--warning-500); }
+        .icon-error { color: var(--error-500); }
+        
+        /* Efectos hover para íconos */
+        .sidebar-item:hover i,
+        .btn-primary:hover i,
+        .btn-secondary:hover i {
+            transform: scale(1.1);
+        }
+        
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: var(--transition-fast);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+        
+        .icon-button:hover {
+            background: var(--primary-50);
+        }
+        
+        .icon-button.danger:hover {
+            background: var(--error-50);
+        }
+        
+        .icon-button.success:hover {
+            background: var(--success-50);
+        }
+    </style>
+</head>
+<body style="background: var(--neutral-50);">
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal show">
+        <div class="card" style="max-width: 28rem; width: 100%; margin: 1rem;">
+            <div class="card-header text-center">
+                <h1 style="font-size: 2rem; font-weight: 700; color: var(--primary-800); margin-bottom: 0.5rem;">
+                    🏪 TIENDAS TRESMAS
+                </h1>
+                <p style="color: var(--neutral-500); font-weight: 500;">Sistema Administrativo Profesional</p>
+            </div>
+            <div class="card-body">
+                <form id="loginForm">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; color: var(--neutral-700); font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                            Usuario
+                        </label>
+                        <input type="email" id="loginEmail" class="input-field" value="admin@tresmas.cl" required>
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; color: var(--neutral-700); font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                            Contraseña
+                        </label>
+                        <input type="password" id="loginPassword" class="input-field" value="admin123" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">
+                        <span class="loading" id="loginLoading">Iniciando sesión...</span>
+                        <span id="loginText">Iniciar Sesión</span>
+                    </button>
+                </form>
+                <div id="loginError" style="margin-top: 1rem; color: var(--error-600); font-size: 0.875rem; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header style="background: white; box-shadow: var(--shadow-sm); border-bottom: 1px solid var(--neutral-200);">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--primary-800);">🏪 TIENDAS TRESMAS</h1>
+                    <span class="badge-new">SISTEMA PROFESIONAL</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span id="userInfo" style="color: var(--neutral-600); font-weight: 500;"></span>
+                    <button onclick="logout()" style="color: var(--error-600); background: none; border: none; cursor: pointer; padding: 0.5rem; border-radius: 0.375rem; transition: var(--transition-fast);" 
+                            onmouseover="this.style.background='var(--error-50)'; this.style.color='var(--error-700)'"
+                            onmouseout="this.style.background='none'; this.style.color='var(--error-600)'">
+                        <i data-lucide="log-out" style="width: 1.25rem; height: 1.25rem;"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div style="display: flex;">
+            <!-- Sidebar -->
+            <nav style="width: 16rem; background: white; box-shadow: var(--shadow-sm); height: 100vh; overflow-y: auto;">
+                <div style="padding: 1rem;">
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        <li><a href="#" onclick="showSection('dashboard')" class="sidebar-item active">
+                            <i data-lucide="home" class="icon icon-primary"></i><span>Dashboard</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('planes')" class="sidebar-item">
+                            <i data-lucide="package" class="icon icon-primary"></i><span>Planes de Tienda</span><span class="badge-new" style="margin-left: auto;">REAL</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('clientes')" class="sidebar-item">
+                            <i data-lucide="users" class="icon icon-primary"></i><span>Clientes</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('productos')" class="sidebar-item">
+                            <i data-lucide="shopping-bag" class="icon icon-primary"></i><span>Productos</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('tallas')" class="sidebar-item">
+                            <i data-lucide="ruler" class="icon icon-primary"></i><span>Encuentra tu Talla</span><span class="badge-new" style="margin-left: auto;">NUEVO</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('senaleticas')" class="sidebar-item">
+                            <i data-lucide="calculator" class="icon icon-primary"></i><span>Señaléticas</span><span class="badge-new" style="margin-left: auto;">NUEVO</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('validador')" class="sidebar-item">
+                            <i data-lucide="image" class="icon icon-primary"></i><span>Validador Imágenes</span><span class="badge-new" style="margin-left: auto;">NUEVO</span>
+                        </a></li>
+                        <li><a href="#" onclick="showSection('carga-masiva')" class="sidebar-item">
+                            <i data-lucide="upload" class="icon icon-primary"></i><span>Carga Masiva</span><span class="badge-new" style="margin-left: auto;">NUEVO</span>
+                        </a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main style="flex: 1; padding: 1.5rem; background: var(--neutral-50);">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="section">
+                    <div style="margin-bottom: 2rem;">
+                        <h2 style="font-size: 2rem; font-weight: 700; color: var(--neutral-800); margin-bottom: 0.5rem;">Dashboard</h2>
+                        <p style="color: var(--neutral-600); font-weight: 500;">Resumen general del sistema TIENDAS TRESMAS</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="card">
+                            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <p style="font-size: 0.875rem; font-weight: 600; color: var(--neutral-600); margin-bottom: 0.5rem;">Total Planes</p>
+                                    <p id="stat-planes" style="font-size: 2rem; font-weight: 700; color: var(--primary-600); margin: 0;">-</p>
+                                </div>
+                                <i data-lucide="package" style="width: 2rem; height: 2rem; color: var(--primary-500);"></i>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <p style="font-size: 0.875rem; font-weight: 600; color: var(--neutral-600); margin-bottom: 0.5rem;">Total Clientes</p>
+                                    <p id="stat-clientes" style="font-size: 2rem; font-weight: 700; color: var(--success-600); margin: 0;">-</p>
+                                </div>
+                                <i data-lucide="users" style="width: 2rem; height: 2rem; color: var(--success-500);"></i>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <p style="font-size: 0.875rem; font-weight: 600; color: var(--neutral-600); margin-bottom: 0.5rem;">Total Productos</p>
+                                    <p id="stat-productos" style="font-size: 2rem; font-weight: 700; color: var(--warning-600); margin: 0;">-</p>
+                                </div>
+                                <i data-lucide="shopping-bag" style="width: 2rem; height: 2rem; color: var(--warning-500);"></i>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <p style="font-size: 0.875rem; font-weight: 600; color: var(--neutral-600); margin-bottom: 0.5rem;">Tiendas Activas</p>
+                                    <p id="stat-tiendas" style="font-size: 2rem; font-weight: 700; color: var(--primary-700); margin: 0;">-</p>
+                                </div>
+                                <i data-lucide="store" style="width: 2rem; height: 2rem; color: var(--primary-600);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Planes Disponibles</h3>
+                        <div id="planes-resumen" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Plans will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Planes Section -->
+                <div id="planes-section" class="section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-800">Planes de Tienda</h2>
+                            <p class="text-gray-600">Gestión de planes según especificaciones reales</p>
+                        </div>
+                        <button onclick="showCreatePlanModal()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Nuevo Plan</span>
+                        </button>
+                    </div>
+
+                    <div id="planes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Plans will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Clientes Section -->
+                <div id="clientes-section" class="section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-800">Clientes</h2>
+                            <p class="text-gray-600">Gestión de clientes y empresas</p>
+                        </div>
+                        <button onclick="showCreateClientModal()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Nuevo Cliente</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="p-6">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Empresa</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Representante</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Plan</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Estado</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clientes-table">
+                                        <!-- Clients will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Productos Section -->
+                <div id="productos-section" class="section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-800">Productos</h2>
+                            <p class="text-gray-600">Gestión completa de productos</p>
+                        </div>
+                        <button onclick="showCreateProductModal()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Nuevo Producto</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="p-6">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Producto</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Categoría</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Precio CLP</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Precio USD</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Utilidad %</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Stock</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productos-table">
+                                        <!-- Products will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tallas Section -->
+                <div id="tallas-section" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-800">Encuentra tu Talla</h2>
+                        <p class="text-gray-600">Sistema de cálculo de tallas según especificaciones</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Calculadora de Tallas -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Calculadora de Tallas</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Prenda</label>
+                                    <select id="tipo-talla" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccionar tipo...</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Medida (cm)</label>
+                                    <input type="number" id="medida-talla" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ingrese medida en centímetros">
+                                </div>
+                                
+                                <button onclick="calcularTalla()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                                    Calcular Talla
+                                </button>
+                            </div>
+                            
+                            <div id="resultado-talla" class="mt-6 hidden">
+                                <div class="bg-green-50 border border-green-200 rounded-md p-4">
+                                    <h4 class="font-semibold text-green-800 mb-2">Resultado:</h4>
+                                    <div id="talla-info" class="text-green-700"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Referencia -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tabla de Referencia</h3>
+                            <div id="tabla-tallas" class="overflow-x-auto">
+                                <!-- Size table will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Señaléticas Section -->
+                <div id="senaleticas-section" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-800">Calculadora de Señaléticas</h2>
+                        <p class="text-gray-600">Sistema de costeo técnico según especificaciones</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Formulario de Cálculo -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Parámetros de Cálculo</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Ancho (cm)</label>
+                                        <input type="number" id="ancho-senaletica" value="60" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Alto (cm)</label>
+                                        <input type="number" id="alto-senaletica" value="90" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad</label>
+                                    <input type="number" id="cantidad-senaletica" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Material Sustrato</label>
+                                    <select id="sustrato-senaletica" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccionar sustrato...</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Material Gráfica</label>
+                                    <select id="grafica-senaletica" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccionar gráfica...</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Impresión</label>
+                                    <select id="impresion-senaletica" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccionar impresión...</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Acabado</label>
+                                    <select id="acabado-senaletica" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccionar acabado...</option>
+                                    </select>
+                                </div>
+                                
+                                <button onclick="calcularSenaletica()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                                    Calcular Costo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Resultado del Cálculo -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Resultado del Cálculo</h3>
+                            <div id="resultado-senaletica" class="space-y-4">
+                                <p class="text-gray-500 text-center">Complete los parámetros y haga clic en "Calcular Costo" para ver el resultado.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validador Section -->
+                <div id="validador-section" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-800">Validador de Imágenes</h2>
+                        <p class="text-gray-600">Validación automática de imágenes de productos</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Upload Area -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Subir Imagen</h3>
+                            
+                            <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
+                                <i data-lucide="upload" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                                <p class="text-gray-600 mb-2">Arrastra una imagen aquí o haz clic para seleccionar</p>
+                                <p class="text-sm text-gray-500">Formatos: JPG, PNG, GIF, WEBP (máx. 5MB)</p>
+                                <input type="file" id="file-input" class="hidden" accept="image/*">
+                            </div>
+                            
+                            <div id="image-preview" class="mt-4 hidden">
+                                <img id="preview-img" class="max-w-full h-48 object-contain mx-auto rounded-md">
+                                <button onclick="validarImagen()" class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                                    Validar Imagen
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Validation Results -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Resultado de Validación</h3>
+                            <div id="resultado-validacion" class="space-y-4">
+                                <p class="text-gray-500 text-center">Seleccione una imagen para ver los resultados de validación.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carga Masiva Section -->
+                <div id="carga-masiva-section" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-800">Carga Masiva de Productos</h2>
+                        <p class="text-gray-600">Importación masiva desde archivos Excel</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Upload Excel -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Subir Archivo Excel</h3>
+                            
+                            <div id="excel-drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
+                                <i data-lucide="file-spreadsheet" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                                <p class="text-gray-600 mb-2">Arrastra un archivo Excel aquí o haz clic para seleccionar</p>
+                                <p class="text-sm text-gray-500">Formatos: XLSX, XLS</p>
+                                <input type="file" id="excel-input" class="hidden" accept=".xlsx,.xls">
+                            </div>
+                            
+                            <div id="excel-info" class="mt-4 hidden">
+                                <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                    <h4 class="font-semibold text-blue-800 mb-2">Archivo Cargado:</h4>
+                                    <div id="excel-details" class="text-blue-700 text-sm"></div>
+                                </div>
+                                <button onclick="analizarExcel()" class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                                    Analizar Archivo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Results -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Análisis del Archivo</h3>
+                            <div id="resultado-analisis" class="space-y-4">
+                                <p class="text-gray-500 text-center">Seleccione un archivo Excel para ver el análisis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let authToken = null;
+        const API_BASE = 'http://localhost:5001';
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // API Helper functions
+        async function apiCall(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            };
+
+            if (authToken) {
+                config.headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            try {
+                const response = await fetch(url, config);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error en la petición');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Authentication
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const loginLoading = document.getElementById('loginLoading');
+            const loginText = document.getElementById('loginText');
+            const loginError = document.getElementById('loginError');
+            
+            loginLoading.classList.add('show');
+            loginText.style.display = 'none';
+            loginError.classList.add('hidden');
+            
+            try {
+                const response = await apiCall('/admin/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.success) {
+                    authToken = response.token;
+                    currentUser = response.usuario;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    document.getElementById('loginModal').classList.remove('show');
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    document.getElementById('userInfo').textContent = currentUser.nombre;
+                    
+                    // Load dashboard
+                    loadDashboard();
+                } else {
+                    throw new Error(response.error || 'Error de autenticación');
+                }
+            } catch (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                loginLoading.classList.remove('show');
+                loginText.style.display = 'inline';
+            }
+        });
+
+        // Check for existing session
+        function checkSession() {
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('currentUser');
+            
+            if (token && user) {
+                authToken = token;
+                currentUser = JSON.parse(user);
+                document.getElementById('loginModal').classList.remove('show');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userInfo').textContent = currentUser.nombre;
+                loadDashboard();
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            authToken = null;
+            currentUser = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remove active class from all sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+            
+            // Add active class to clicked item
+            event.target.closest('.sidebar-item').classList.add('active');
+            
+            // Load section data
+            switch(sectionName) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'planes':
+                    loadPlanes();
+                    break;
+                case 'clientes':
+                    loadClientes();
+                    break;
+                case 'productos':
+                    loadProductos();
+                    break;
+                case 'tallas':
+                    loadTallas();
+                    break;
+                case 'senaleticas':
+                    loadSenaleticas();
+                    break;
+                case 'validador':
+                    initValidador();
+                    break;
+                case 'carga-masiva':
+                    initCargaMasiva();
+                    break;
+            }
+        }
+
+        // Dashboard functions
+        async function loadDashboard() {
+            try {
+                const response = await apiCall('/admin/dashboard');
+                
+                if (response.success) {
+                    const stats = response.estadisticas;
+                    
+                    document.getElementById('stat-planes').textContent = stats.total_planes;
+                    document.getElementById('stat-clientes').textContent = stats.total_clientes;
+                    document.getElementById('stat-productos').textContent = stats.total_productos;
+                    document.getElementById('stat-tiendas').textContent = stats.total_tiendas;
+                    
+                    // Load plans summary
+                    const planesResumen = document.getElementById('planes-resumen');
+                    planesResumen.innerHTML = '';
+                    
+                    response.planes.forEach(plan => {
+                        const planCard = document.createElement('div');
+                        planCard.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200';
+                        planCard.innerHTML = `
+                            <h4 class="font-semibold text-gray-800">${plan.nombre}</h4>
+                            <p class="text-sm text-gray-600 mt-1">Mensual: $${plan.precio_mensual.toLocaleString()}</p>
+                            <p class="text-sm text-gray-600">Anual: $${plan.precio_anual.toLocaleString()}</p>
+                            <p class="text-xs text-gray-500 mt-2">Límite: ${plan.limite_productos === -1 ? 'Ilimitado' : plan.limite_productos + ' productos'}</p>
+                        `;
+                        planesResumen.appendChild(planCard);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Plans functions
+        async function loadPlanes() {
+            try {
+                const response = await apiCall('/admin/planes');
+                
+                if (response.planes) {
+                    const planesGrid = document.getElementById('planes-grid');
+                    planesGrid.innerHTML = '';
+                    
+                    response.planes.forEach(plan => {
+                        const planCard = document.createElement('div');
+                        planCard.className = 'bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow';
+                        
+                        // Determinar si es popular
+                        const popularBadge = plan.popular ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">POPULAR</span>' : '';
+                        
+                        // Mostrar ahorro si existe
+                        const ahorroInfo = plan.ahorro ? `<p class="text-sm text-green-600 font-semibold">💰 Ahorro: $${plan.ahorro.toLocaleString()}</p>` : '';
+                        
+                        planCard.innerHTML = `
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800 leading-tight">${plan.nombre}</h3>
+                                <div class="flex space-x-2">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${plan.categoria}</span>
+                                    ${popularBadge}
+                                </div>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm text-gray-600">💳 Mensual: <span class="font-bold text-blue-600">$${plan.precio_mensual.toLocaleString()}</span></p>
+                                <p class="text-sm text-gray-600">📅 Anual: <span class="font-bold text-green-600">$${plan.precio_anual.toLocaleString()}</span></p>
+                                <p class="text-sm text-gray-600">🏁 Pago inicial: <span class="font-semibold">$${plan.pago_inicial.toLocaleString()}</span></p>
+                                ${ahorroInfo}
+                                <p class="text-sm text-gray-600">📦 Productos: <span class="font-semibold">${plan.limite_productos === -1 ? 'Ilimitados' : plan.limite_productos}</span></p>
+                                <p class="text-sm text-gray-600">📧 Correos: <span class="font-semibold">${plan.correos_corporativos === -1 ? 'Ilimitados' : plan.correos_corporativos}</span></p>
+                                <p class="text-sm text-gray-600">💾 Espacio: <span class="font-semibold">${plan.espacio_disco_gb}GB</span></p>
+                                <p class="text-sm text-gray-600">🌐 Transferencia: <span class="font-semibold">${plan.transferencia_gb}GB/mes</span></p>
+                            </div>
+                            <div class="space-y-1 mb-4 max-h-32 overflow-y-auto">
+                                <p class="text-xs font-semibold text-gray-700 mb-2">Características incluidas:</p>
+                                ${plan.caracteristicas.slice(0, 8).map(c => `<p class="text-xs text-gray-600">✅ ${c}</p>`).join('')}
+                                ${plan.caracteristicas.length > 8 ? `<p class="text-xs text-gray-400 font-semibold">... y ${plan.caracteristicas.length - 8} características más</p>` : ''}
+                            </div>
+                            <div class="flex space-x-2 pt-4 border-t border-gray-100">
+                                <button onclick="editPlan(${plan.id})" class="flex-1 bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-700 text-sm font-medium transition-colors">
+                                    ✏️ Editar
+                                </button>
+                                <button onclick="viewPlanDetails(${plan.id})" class="flex-1 bg-green-600 text-white py-2 px-3 rounded-md hover:bg-green-700 text-sm font-medium transition-colors">
+                                    👁️ Ver
+                                </button>
+                                <button onclick="deletePlan(${plan.id})" class="bg-red-600 text-white py-2 px-3 rounded-md hover:bg-red-700 text-sm transition-colors">
+                                    🗑️
+                                </button>
+                            </div>
+                        `;
+                        planesGrid.appendChild(planCard);
+                    });
+                    
+                    lucide.createIcons();
+                } else {
+                    console.error('No se pudieron cargar los planes');
+                }
+            } catch (error) {
+                console.error('Error loading plans:', error);
+                const planesGrid = document.getElementById('planes-grid');
+                planesGrid.innerHTML = '<div class="col-span-full text-center text-red-600 p-8">❌ Error al cargar los planes. Verifique la conexión con el servidor.</div>';
+            }
+        }
+
+        // Clients functions
+        async function loadClientes() {
+            try {
+                const response = await apiCall('/admin/clientes');
+                
+                if (response.success) {
+                    const clientesTable = document.getElementById('clientes-table');
+                    clientesTable.innerHTML = '';
+                    
+                    response.clientes.forEach(cliente => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-100 hover:bg-gray-50';
+                        row.innerHTML = `
+                            <td class="py-3 px-4">
+                                <div>
+                                    <p class="font-semibold text-gray-800">${cliente.nombre_empresa}</p>
+                                    <p class="text-sm text-gray-600">${cliente.rut_empresa}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div>
+                                    <p class="text-gray-800">${cliente.nombre_representante}</p>
+                                    <p class="text-sm text-gray-600">${cliente.rut_representante}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-gray-800">${cliente.email_corporativo}</td>
+                            <td class="py-3 px-4">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Plan ${cliente.plan_id}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Activo</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                                    <button onclick="editClient(${cliente.id})" class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="deleteClient(${cliente.id})" class="text-red-600 hover:text-red-800">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        clientesTable.appendChild(row);
+                    });
+                    
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Error loading clients:', error);
+            }
+        }
+
+        // Products functions
+        async function loadProductos() {
+            try {
+                const response = await apiCall('/admin/productos');
+                
+                if (response.success) {
+                    const productosTable = document.getElementById('productos-table');
+                    productosTable.innerHTML = '';
+                    
+                    response.productos.forEach(producto => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-100 hover:bg-gray-50';
+                        row.innerHTML = `
+                            <td class="py-3 px-4">
+                                <div>
+                                    <p class="font-semibold text-gray-800">${producto.nombre}</p>
+                                    <p class="text-sm text-gray-600">SKU: ${producto.sku}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-gray-800">${producto.categoria}</td>
+                            <td class="py-3 px-4 text-gray-800">$${producto.precio_venta.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-gray-800">$${producto.precio_usd}</td>
+                            <td class="py-3 px-4">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">${producto.utilidad_porcentaje}%</span>
+                            </td>
+                            <td class="py-3 px-4 text-gray-800">${producto.stock || 0}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                                    <button onclick="editProduct(${producto.id})" class="text-blue-600 hover:text-blue-800">
+                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="deleteProduct(${producto.id})" class="text-red-600 hover:text-red-800">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        productosTable.appendChild(row);
+                    });
+                    
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Size calculator functions
+        async function loadTallas() {
+            try {
+                const response = await apiCall('/admin/tallas');
+                
+                if (response.success) {
+                    const tipoTalla = document.getElementById('tipo-talla');
+                    tipoTalla.innerHTML = '<option value="">Seleccionar tipo...</option>';
+                    
+                    response.tipos_tallas.forEach(tipo => {
+                        const option = document.createElement('option');
+                        option.value = tipo.id;
+                        option.textContent = `${tipo.nombre} (${tipo.genero})`;
+                        tipoTalla.appendChild(option);
+                    });
+                    
+                    // Store types for later use
+                    window.tiposTallas = response.tipos_tallas;
+                }
+            } catch (error) {
+                console.error('Error loading sizes:', error);
+            }
+        }
+
+        async function calcularTalla() {
+            const tipoId = parseInt(document.getElementById('tipo-talla').value);
+            const medida = parseFloat(document.getElementById('medida-talla').value);
+            
+            if (!tipoId || !medida) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/admin/tallas/calcular', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tipo_id: tipoId,
+                        medida: medida
+                    })
+                });
+                
+                if (response.success) {
+                    const resultadoDiv = document.getElementById('resultado-talla');
+                    const tallaInfo = document.getElementById('talla-info');
+                    
+                    tallaInfo.innerHTML = `
+                        <p><strong>Tipo:</strong> ${response.tipo}</p>
+                        <p><strong>Talla:</strong> ${response.talla.talla}</p>
+                        <p><strong>Equivalencia EU:</strong> ${response.talla.eu}</p>
+                        <p><strong>Equivalencia CL:</strong> ${response.talla.cl}</p>
+                        <p><strong>Medida ingresada:</strong> ${response.medida_ingresada} cm</p>
+                    `;
+                    
+                    resultadoDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                alert('Error al calcular talla: ' + error.message);
+            }
+        }
+
+        // Signage calculator functions
+        async function loadSenaleticas() {
+            try {
+                const response = await apiCall('/admin/senaleticas/materiales');
+                
+                if (response.success) {
+                    // Load substrates
+                    const sustratoSelect = document.getElementById('sustrato-senaletica');
+                    sustratoSelect.innerHTML = '<option value="">Seleccionar sustrato...</option>';
+                    
+                    const graficaSelect = document.getElementById('grafica-senaletica');
+                    graficaSelect.innerHTML = '<option value="">Seleccionar gráfica...</option>';
+                    
+                    response.materiales.forEach(material => {
+                        const option = document.createElement('option');
+                        option.value = material.id;
+                        option.textContent = `${material.nombre} ($${material.precio_m2.toLocaleString()}/m²)`;
+                        
+                        if (material.tipo === 'Sustrato') {
+                            sustratoSelect.appendChild(option);
+                        } else {
+                            graficaSelect.appendChild(option);
+                        }
+                    });
+                    
+                    // Load print types
+                    const impresionSelect = document.getElementById('impresion-senaletica');
+                    impresionSelect.innerHTML = '<option value="">Seleccionar impresión...</option>';
+                    
+                    response.tipos_impresion.forEach(tipo => {
+                        const option = document.createElement('option');
+                        option.value = tipo.id;
+                        option.textContent = `${tipo.nombre} ($${tipo.costo_m2.toLocaleString()}/m²)`;
+                        impresionSelect.appendChild(option);
+                    });
+                    
+                    // Load finishes
+                    const acabadoSelect = document.getElementById('acabado-senaletica');
+                    acabadoSelect.innerHTML = '<option value="">Seleccionar acabado...</option>';
+                    
+                    response.acabados.forEach(acabado => {
+                        const option = document.createElement('option');
+                        option.value = acabado.id;
+                        option.textContent = `${acabado.nombre} (+$${acabado.costo_adicional.toLocaleString()}/m²)`;
+                        acabadoSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading signage materials:', error);
+            }
+        }
+
+        async function calcularSenaletica() {
+            const ancho = parseFloat(document.getElementById('ancho-senaletica').value);
+            const alto = parseFloat(document.getElementById('alto-senaletica').value);
+            const cantidad = parseInt(document.getElementById('cantidad-senaletica').value);
+            const sustratoId = parseInt(document.getElementById('sustrato-senaletica').value);
+            const graficaId = parseInt(document.getElementById('grafica-senaletica').value);
+            const impresionId = parseInt(document.getElementById('impresion-senaletica').value);
+            const acabadoId = parseInt(document.getElementById('acabado-senaletica').value);
+            
+            if (!ancho || !alto || !cantidad || !sustratoId || !graficaId || !impresionId || !acabadoId) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/admin/senaleticas/calcular', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ancho: ancho,
+                        alto: alto,
+                        cantidad: cantidad,
+                        sustrato_id: sustratoId,
+                        grafica_id: graficaId,
+                        tipo_impresion_id: impresionId,
+                        acabado_id: acabadoId
+                    })
+                });
+                
+                if (response.success) {
+                    const resultado = response.calculo;
+                    const resultadoDiv = document.getElementById('resultado-senaletica');
+                    
+                    resultadoDiv.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <h4 class="font-semibold text-blue-800 mb-2">Parámetros:</h4>
+                                <p class="text-sm text-blue-700">Dimensiones: ${resultado.parametros.ancho_cm} x ${resultado.parametros.alto_cm} cm</p>
+                                <p class="text-sm text-blue-700">Área: ${resultado.parametros.area_m2} m²</p>
+                                <p class="text-sm text-blue-700">Cantidad: ${resultado.parametros.cantidad} unidades</p>
+                            </div>
+                            
+                            <div class="bg-green-50 border border-green-200 rounded-md p-4">
+                                <h4 class="font-semibold text-green-800 mb-2">Materiales:</h4>
+                                <p class="text-sm text-green-700">Sustrato: ${resultado.materiales.sustrato}</p>
+                                <p class="text-sm text-green-700">Gráfica: ${resultado.materiales.grafica}</p>
+                                <p class="text-sm text-green-700">Impresión: ${resultado.materiales.tipo_impresion}</p>
+                                <p class="text-sm text-green-700">Acabado: ${resultado.materiales.acabado}</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                                <h4 class="font-semibold text-yellow-800 mb-2">Costos Unitarios:</h4>
+                                <p class="text-sm text-yellow-700">Costo Directo: $${resultado.costos_unitarios.costo_directo.toLocaleString()}</p>
+                                <p class="text-sm text-yellow-700">Costo Producción: $${resultado.costos_unitarios.costo_produccion.toLocaleString()}</p>
+                                <p class="text-sm text-yellow-700">Costo Total: $${resultado.costos_unitarios.costo_total_comercial.toLocaleString()}</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 border border-purple-200 rounded-md p-4">
+                                <h4 class="font-semibold text-purple-800 mb-2">Precios Finales:</h4>
+                                <p class="text-sm text-purple-700">Precio Neto Unitario: $${resultado.precios.precio_venta_neto.toLocaleString()}</p>
+                                <p class="text-sm text-purple-700">IVA: $${resultado.precios.iva.toLocaleString()}</p>
+                                <p class="text-lg font-bold text-purple-800">Precio Final Unitario: $${resultado.precios.precio_final_unitario.toLocaleString()}</p>
+                                <p class="text-xl font-bold text-purple-900">PRECIO TOTAL: $${resultado.precios.precio_total.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                alert('Error al calcular señalética: ' + error.message);
+            }
+        }
+
+        // Image validator functions
+        function initValidador() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-blue-400');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-blue-400');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-400');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleImageFile(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleImageFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor seleccione un archivo de imagen');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const previewImg = document.getElementById('preview-img');
+                previewImg.src = e.target.result;
+                document.getElementById('image-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+            
+            window.selectedImageFile = file;
+        }
+
+        async function validarImagen() {
+            if (!window.selectedImageFile) {
+                alert('Por favor seleccione una imagen');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('imagen', window.selectedImageFile);
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/validador-imagenes/validar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const resultadoDiv = document.getElementById('resultado-validacion');
+                    const validacion = data.validacion;
+                    
+                    resultadoDiv.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <h4 class="font-semibold text-blue-800 mb-2">Información del Archivo:</h4>
+                                <p class="text-sm text-blue-700">Formato: ${validacion.formato}</p>
+                                <p class="text-sm text-blue-700">Dimensiones: ${validacion.dimensiones}</p>
+                                <p class="text-sm text-blue-700">Tamaño: ${validacion.tamaño_kb} KB</p>
+                                <p class="text-sm text-blue-700">Modo de color: ${validacion.modo_color}</p>
+                            </div>
+                            
+                            <div class="bg-${data.valida ? 'green' : 'red'}-50 border border-${data.valida ? 'green' : 'red'}-200 rounded-md p-4">
+                                <h4 class="font-semibold text-${data.valida ? 'green' : 'red'}-800 mb-2">Validaciones:</h4>
+                                <p class="text-sm text-${data.valida ? 'green' : 'red'}-700">Formato válido: ${validacion.validaciones.formato_valido ? '✅' : '❌'}</p>
+                                <p class="text-sm text-${data.valida ? 'green' : 'red'}-700">Tamaño adecuado: ${validacion.validaciones.tamaño_adecuado ? '✅' : '❌'}</p>
+                                <p class="text-sm text-${data.valida ? 'green' : 'red'}-700">Dimensiones mínimas: ${validacion.validaciones.dimensiones_minimas ? '✅' : '❌'}</p>
+                                <p class="text-sm text-${data.valida ? 'green' : 'red'}-700">Relación de aspecto: ${validacion.validaciones.relacion_aspecto ? '✅' : '❌'}</p>
+                            </div>
+                            
+                            ${data.sugerencias.length > 0 ? `
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                                <h4 class="font-semibold text-yellow-800 mb-2">Sugerencias:</h4>
+                                ${data.sugerencias.map(s => `<p class="text-sm text-yellow-700">• ${s}</p>`).join('')}
+                            </div>
+                            ` : ''}
+                            
+                            <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                                <h4 class="font-semibold text-gray-800 mb-2">SKU Sugerido:</h4>
+                                <p class="text-sm text-gray-700 font-mono">${data.sku_sugerido}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                alert('Error al validar imagen: ' + error.message);
+            }
+        }
+
+        // Mass upload functions
+        function initCargaMasiva() {
+            const dropZone = document.getElementById('excel-drop-zone');
+            const fileInput = document.getElementById('excel-input');
+            
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-blue-400');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-blue-400');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-400');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleExcelFile(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleExcelFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleExcelFile(file) {
+            if (!file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().endsWith('.xls')) {
+                alert('Por favor seleccione un archivo Excel (.xlsx o .xls)');
+                return;
+            }
+            
+            const excelDetails = document.getElementById('excel-details');
+            excelDetails.innerHTML = `
+                <p>Archivo: ${file.name}</p>
+                <p>Tamaño: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <p>Tipo: ${file.type}</p>
+            `;
+            
+            document.getElementById('excel-info').classList.remove('hidden');
+            window.selectedExcelFile = file;
+        }
+
+        async function analizarExcel() {
+            if (!window.selectedExcelFile) {
+                alert('Por favor seleccione un archivo Excel');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('archivo', window.selectedExcelFile);
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/carga-masiva/analizar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const resultadoDiv = document.getElementById('resultado-analisis');
+                    const analisis = data.analisis;
+                    
+                    resultadoDiv.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <h4 class="font-semibold text-blue-800 mb-2">Información del Archivo:</h4>
+                                <p class="text-sm text-blue-700">Total de filas: ${analisis.total_filas}</p>
+                                <p class="text-sm text-blue-700">Total de columnas: ${analisis.total_columnas}</p>
+                            </div>
+                            
+                            <div class="bg-green-50 border border-green-200 rounded-md p-4">
+                                <h4 class="font-semibold text-green-800 mb-2">Columnas Detectadas:</h4>
+                                <div class="text-sm text-green-700 max-h-32 overflow-y-auto">
+                                    ${analisis.columnas.map(col => `<p>• ${col}</p>`).join('')}
+                                </div>
+                            </div>
+                            
+                            ${analisis.columnas_importantes.length > 0 ? `
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                                <h4 class="font-semibold text-yellow-800 mb-2">Columnas Importantes Encontradas:</h4>
+                                <div class="text-sm text-yellow-700">
+                                    ${analisis.columnas_importantes.map(col => `<p>✅ ${col}</p>`).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                                <h4 class="font-semibold text-gray-800 mb-2">Muestra de Datos:</h4>
+                                <div class="text-xs text-gray-700 max-h-32 overflow-y-auto">
+                                    ${analisis.muestra_datos.map((fila, i) => `
+                                        <p class="mb-1"><strong>Fila ${i + 1}:</strong> ${Object.entries(fila).slice(0, 3).map(([k, v]) => `${k}: ${v}`).join(', ')}</p>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <button onclick="procesarCargaMasiva()" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                                Procesar Carga Masiva
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                alert('Error al analizar Excel: ' + error.message);
+            }
+        }
+
+        async function procesarCargaMasiva() {
+            if (!window.selectedExcelFile) {
+                alert('Por favor seleccione un archivo Excel');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('archivo', window.selectedExcelFile);
+            formData.append('mapeo', JSON.stringify({})); // Mapeo básico por ahora
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/carga-masiva/procesar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`Carga masiva completada!\nProductos procesados: ${data.productos_procesados}\nErrores: ${data.errores.length}`);
+                    
+                    // Reload products if we're on that section
+                    if (!document.getElementById('productos-section').classList.contains('hidden')) {
+                        loadProductos();
+                    }
+                }
+            } catch (error) {
+                alert('Error en carga masiva: ' + error.message);
+            }
+        }
+
+        // Modal functions (placeholders)
+        function showCreatePlanModal() {
+            alert('Funcionalidad de crear plan en desarrollo');
+        }
+
+        function showCreateClientModal() {
+            alert('Funcionalidad de crear cliente en desarrollo');
+        }
+
+        function showCreateProductModal() {
+            alert('Funcionalidad de crear producto en desarrollo');
+        }
+
+        function editPlan(id) {
+            alert(`Editar plan ${id} - En desarrollo`);
+        }
+
+        function deletePlan(id) {
+            if (confirm('¿Está seguro de eliminar este plan?')) {
+                alert(`Eliminar plan ${id} - En desarrollo`);
+            }
+        }
+
+        function editClient(id) {
+            alert(`Editar cliente ${id} - En desarrollo`);
+        }
+
+        function deleteClient(id) {
+            if (confirm('¿Está seguro de eliminar este cliente?')) {
+                alert(`Eliminar cliente ${id} - En desarrollo`);
+            }
+        }
+
+        function editProduct(id) {
+            alert(`Editar producto ${id} - En desarrollo`);
+        }
+
+        function deleteProduct(id) {
+            if (confirm('¿Está seguro de eliminar este producto?')) {
+                alert(`Eliminar producto ${id} - En desarrollo`);
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+        });
+    </script>
+</body>
+</html>
+
