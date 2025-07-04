@@ -1,0 +1,121 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { Footprints, HelpCircle } from "lucide-react";
+
+/* Encuentra tu talla – Zapatos HOMBRE (EU ↔ longitud pie cm) | v0.1 */
+
+// Tabla EU ↔ long. pie (cm)
+const TABLE = [
+  { min: 24.0, max: 24.4, eu: 39, us: 6, uk: 5 },
+  { min: 24.5, max: 24.9, eu: 40, us: 6.5, uk: 5.5 },
+  { min: 25.0, max: 25.4, eu: 40.5, us: 7, uk: 6 },
+  { min: 25.5, max: 25.9, eu: 41, us: 7.5, uk: 6.5 },
+  { min: 26.0, max: 26.4, eu: 41.5, us: 8, uk: 7 },
+  { min: 26.5, max: 26.9, eu: 42, us: 8.5, uk: 7.5 },
+  { min: 27.0, max: 27.4, eu: 42.5, us: 9, uk: 8 },
+  { min: 27.5, max: 27.9, eu: 43, us: 9.5, uk: 8.5 },
+  { min: 28.0, max: 28.4, eu: 43.5, us: 10, uk: 9 },
+  { min: 28.5, max: 28.9, eu: 44, us: 10.5, uk: 9.5 },
+  { min: 29.0, max: 29.4, eu: 44.5, us: 11, uk: 10 },
+  { min: 29.5, max: 29.9, eu: 45, us: 11.5, uk: 10.5 },
+  { min: 30.0, max: 30.4, eu: 46, us: 12, uk: 11 },
+  { min: 30.5, max: 30.9, eu: 46.5, us: 12.5, uk: 11.5 },
+  { min: 31.0, max: 31.4, eu: 47, us: 13, uk: 12 },
+  { min: 31.5, max: 31.9, eu: 47.5, us: 13.5, uk: 12.5 },
+  { min: 32.0, max: 32.4, eu: 48, us: 14, uk: 13 },
+];
+
+const MIN_CM = TABLE[0].min;
+const MAX_CM = TABLE[TABLE.length - 1].max;
+
+function findSize(cm) {
+  if (isNaN(cm) || cm <= 0) return { error: "Ingresa una medida válida" };
+  const row = TABLE.find((r) => cm >= r.min && cm <= r.max);
+  return row || { error: "Medida fuera de rango" };
+}
+
+export default function FindMySizeShoesMen() {
+  const [cm, setCm] = useState(27.0);
+  const result = cm ? findSize(parseFloat(cm)) : null;
+
+  return (
+    <Card className="w-full max-w-md">
+      <CardContent className="p-6 space-y-5">
+        <h3 className="text-xl font-semibold text-center">
+          Encuentra tu talla – Zapatos HOMBRE
+        </h3>
+        <p className="text-xs text-center text-muted-foreground">
+          Ingresa la longitud de tu pie (rango {MIN_CM}-{MAX_CM} cm)
+        </p>
+
+        <TooltipProvider delayDuration={200} disableHoverableContent>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={MIN_CM}
+              max={MAX_CM}
+              step="0.1"
+              placeholder={`${MIN_CM}-${MAX_CM} cm`}
+              value={cm}
+              onChange={(e) => setCm(e.target.value)}
+              className="flex-1"
+            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-5 h-5 text-gray-500 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-sm leading-snug">
+                Dibuja el contorno de tu pie sobre una hoja y mide del talón a la punta. Valores válidos: {MIN_CM}-{MAX_CM} cm.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+
+        {result && (
+          <div className="text-center text-sm">
+            {result.error ? (
+              <span className="text-red-600 font-medium">{result.error}</span>
+            ) : (
+              <div className="space-y-1">
+                <p><strong>EU:</strong> {result.eu} | <strong>US:</strong> {result.us}</p>
+                <p><strong>UK:</strong> {result.uk}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <Button
+          className="w-full mt-2"
+          disabled={!result || result.error}
+          onClick={() => {
+            if (result && !result.error) {
+              window.dispatchEvent(new CustomEvent("size:select", { detail: result }));
+            }
+          }}
+        >
+          Usar talla sugerida
+        </Button>
+
+        <div className="flex justify-center gap-4 mt-4 text-gray-400" aria-label="Huella">
+          <Footprints className="w-6 h-6" aria-label="Footprints" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------------- Dev tests ----------------
+if (process.env.NODE_ENV === "development") {
+  const assert = (cond, msg) => { if (!cond) console.error(msg); };
+  assert(findSize(24.2).eu === 39, "24.2 cm → EU 39");
+  assert(findSize(30.8).eu === 46.5, "30.8 cm → EU 46.5");
+  assert(findSize(23).error, "23 cm fuera de rango");
+}
