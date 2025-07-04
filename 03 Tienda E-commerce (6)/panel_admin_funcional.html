@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - eCommerce Moderno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .sidebar-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 w-96 max-w-md mx-4">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Panel Administrativo</h2>
+                <p class="text-gray-600 mt-2">Ingresa tus credenciales</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="loginEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
+                           value="admin@ecommerce.com" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
+                    <input type="password" id="loginPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" 
+                           value="admin123" required>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <div id="loginError" class="mt-4 text-red-600 text-sm hidden"></div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div id="mainLayout" class="hidden">
+        <!-- Sidebar -->
+        <div class="fixed left-0 top-0 h-full w-64 sidebar-gradient text-white z-40">
+            <div class="p-6">
+                <h1 class="text-xl font-bold">eCommerce Admin</h1>
+                <p class="text-blue-100 text-sm mt-1">Panel de Gestión</p>
+            </div>
+            
+            <nav class="mt-8">
+                <a href="#" onclick="showSection('dashboard')" class="nav-item flex items-center px-6 py-3 text-white hover:bg-white hover:bg-opacity-10 transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" onclick="showSection('products')" class="nav-item flex items-center px-6 py-3 text-white hover:bg-white hover:bg-opacity-10 transition-colors">
+                    <i data-lucide="package" class="w-5 h-5 mr-3"></i>
+                    Productos
+                </a>
+                <a href="#" onclick="showSection('categories')" class="nav-item flex items-center px-6 py-3 text-white hover:bg-white hover:bg-opacity-10 transition-colors">
+                    <i data-lucide="folder" class="w-5 h-5 mr-3"></i>
+                    Categorías
+                </a>
+                <a href="#" onclick="showSection('orders')" class="nav-item flex items-center px-6 py-3 text-white hover:bg-white hover:bg-opacity-10 transition-colors">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i>
+                    Pedidos
+                </a>
+                <a href="#" onclick="showSection('settings')" class="nav-item flex items-center px-6 py-3 text-white hover:bg-white hover:bg-opacity-10 transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
+                    Configuración
+                </a>
+            </nav>
+            
+            <div class="absolute bottom-6 left-6 right-6">
+                <button onclick="logout()" class="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="ml-64 min-h-screen">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h2 id="pageTitle" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Bienvenido, Administrador</span>
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                            <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="p-6">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 card-hover transition-all">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Total Productos</p>
+                                    <p id="totalProducts" class="text-2xl font-bold text-gray-900">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="package" class="w-6 h-6 text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 card-hover transition-all">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Categorías</p>
+                                    <p id="totalCategories" class="text-2xl font-bold text-gray-900">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="folder" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 card-hover transition-all">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Pedidos</p>
+                                    <p id="totalOrders" class="text-2xl font-bold text-gray-900">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="shopping-cart" class="w-6 h-6 text-yellow-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 card-hover transition-all">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Ventas Totales</p>
+                                    <p id="totalSales" class="text-2xl font-bold text-gray-900">$0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="dollar-sign" class="w-6 h-6 text-purple-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div id="productsSection" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Gestión de Productos</h3>
+                            <button onclick="showAddProductForm()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                                Agregar Producto
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div id="productsTable" class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Nombre</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Categoría</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Precio</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Stock</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Estado</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productsTableBody">
+                                        <tr>
+                                            <td colspan="7" class="text-center py-8 text-gray-500">Cargando productos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories Section -->
+                <div id="categoriesSection" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Gestión de Categorías</h3>
+                            <button onclick="showAddCategoryForm()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                                Agregar Categoría
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div id="categoriesTable" class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Nombre</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Descripción</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Productos</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Estado</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-700">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoriesTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-8 text-gray-500">Cargando categorías...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Section -->
+                <div id="ordersSection" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Gestión de Pedidos</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600">Funcionalidad de pedidos en desarrollo...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settingsSection" class="section hidden">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Configuración de la Tienda</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600">Configuración en desarrollo...</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Agregar Categoría</h3>
+                <button onclick="hideAddCategoryForm()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <form id="addCategoryForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+                    <input type="text" id="categoryName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
+                    <textarea id="categoryDescription" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="3"></textarea>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="hideAddCategoryForm()" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform z-50">
+        <div class="flex items-center">
+            <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+            <span id="toastMessage">Operación exitosa</span>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'http://localhost:5001';
+        let authToken = null;
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Authentication
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.token;
+                    document.getElementById('loginModal').classList.add('hidden');
+                    document.getElementById('mainLayout').classList.remove('hidden');
+                    loadDashboardData();
+                    showToast('Sesión iniciada correctamente');
+                } else {
+                    showLoginError(data.error || 'Error de autenticación');
+                }
+            } catch (error) {
+                showLoginError('Error de conexión');
+                console.error('Login error:', error);
+            }
+        });
+
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function logout() {
+            authToken = null;
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('mainLayout').classList.add('hidden');
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'products': 'Productos',
+                'categories': 'Categorías',
+                'orders': 'Pedidos',
+                'settings': 'Configuración'
+            };
+            document.getElementById('pageTitle').textContent = titles[sectionName];
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('bg-white', 'bg-opacity-10');
+            });
+            event.target.classList.add('bg-white', 'bg-opacity-10');
+            
+            // Load section data
+            if (sectionName === 'products') {
+                loadProducts();
+            } else if (sectionName === 'categories') {
+                loadCategories();
+            }
+        }
+
+        // Dashboard Data
+        async function loadDashboardData() {
+            try {
+                // Load products count
+                const productsResponse = await fetch(`${API_BASE}/admin/products`);
+                const productsData = await productsResponse.json();
+                if (productsData.success) {
+                    document.getElementById('totalProducts').textContent = productsData.products.length;
+                }
+                
+                // Load categories count
+                const categoriesResponse = await fetch(`${API_BASE}/admin/categories`);
+                const categoriesData = await categoriesResponse.json();
+                if (categoriesData.success) {
+                    document.getElementById('totalCategories').textContent = categoriesData.categories.length;
+                }
+                
+                // Calculate total sales
+                if (productsData.success) {
+                    const totalSales = productsData.products.reduce((sum, product) => {
+                        return sum + (parseFloat(product.price) * product.stock_quantity * 0.1); // Estimación
+                    }, 0);
+                    document.getElementById('totalSales').textContent = '$' + totalSales.toLocaleString('es-CL');
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Products Management
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/products`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('productsTableBody');
+                    tbody.innerHTML = '';
+                    
+                    data.products.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-100 hover:bg-gray-50';
+                        row.innerHTML = `
+                            <td class="py-3 px-4">${product.id}</td>
+                            <td class="py-3 px-4 font-medium">${product.name}</td>
+                            <td class="py-3 px-4">${product.category_name}</td>
+                            <td class="py-3 px-4">$${parseFloat(product.price).toLocaleString('es-CL')}</td>
+                            <td class="py-3 px-4">${product.stock_quantity}</td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 text-xs rounded-full ${product.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    ${product.is_active ? 'Activo' : 'Inactivo'}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    // Re-initialize icons
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Categories Management
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/categories`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('categoriesTableBody');
+                    tbody.innerHTML = '';
+                    
+                    data.categories.forEach(category => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-100 hover:bg-gray-50';
+                        row.innerHTML = `
+                            <td class="py-3 px-4">${category.id}</td>
+                            <td class="py-3 px-4 font-medium">${category.name}</td>
+                            <td class="py-3 px-4">${category.description || '-'}</td>
+                            <td class="py-3 px-4">${category.product_count}</td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 text-xs rounded-full ${category.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    ${category.is_active ? 'Activa' : 'Inactiva'}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    // Re-initialize icons
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Category Forms
+        function showAddCategoryForm() {
+            document.getElementById('addCategoryModal').classList.remove('hidden');
+        }
+
+        function hideAddCategoryForm() {
+            document.getElementById('addCategoryModal').classList.add('hidden');
+            document.getElementById('addCategoryForm').reset();
+        }
+
+        function showAddProductForm() {
+            showToast('Formulario de productos en desarrollo');
+        }
+
+        // Add Category Form Handler
+        document.getElementById('addCategoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('categoryName').value;
+            const description = document.getElementById('categoryDescription').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/categories`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ name, description })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    hideAddCategoryForm();
+                    loadCategories();
+                    showToast('Categoría creada exitosamente');
+                } else {
+                    showToast(data.error || 'Error creando categoría', 'error');
+                }
+            } catch (error) {
+                console.error('Error creating category:', error);
+                showToast('Error de conexión', 'error');
+            }
+        });
+
+        // Toast Notifications
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            if (type === 'error') {
+                toast.className = toast.className.replace('bg-green-600', 'bg-red-600');
+            } else {
+                toast.className = toast.className.replace('bg-red-600', 'bg-green-600');
+            }
+            
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
+

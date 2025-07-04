@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - eCommerce Moderno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .admin-sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .metric-card-blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .metric-card-green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        .metric-card-purple {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 admin-sidebar transform transition-transform duration-300 ease-in-out">
+        <div class="flex items-center justify-center h-16 bg-black bg-opacity-20">
+            <h1 class="text-white text-xl font-bold">🛍️ Admin Panel</h1>
+        </div>
+        
+        <nav class="mt-8">
+            <div class="px-4 space-y-2">
+                <a href="#dashboard" class="nav-item active flex items-center px-4 py-3 text-white bg-black bg-opacity-20 rounded-lg">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#products" class="nav-item flex items-center px-4 py-3 text-white hover:bg-black hover:bg-opacity-20 rounded-lg transition-colors">
+                    <i data-lucide="package" class="w-5 h-5 mr-3"></i>
+                    Productos
+                </a>
+                <a href="#orders" class="nav-item flex items-center px-4 py-3 text-white hover:bg-black hover:bg-opacity-20 rounded-lg transition-colors">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i>
+                    Pedidos
+                </a>
+                <a href="#customers" class="nav-item flex items-center px-4 py-3 text-white hover:bg-black hover:bg-opacity-20 rounded-lg transition-colors">
+                    <i data-lucide="users" class="w-5 h-5 mr-3"></i>
+                    Clientes
+                </a>
+                <a href="#analytics" class="nav-item flex items-center px-4 py-3 text-white hover:bg-black hover:bg-opacity-20 rounded-lg transition-colors">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i>
+                    Analytics
+                </a>
+                <a href="#settings" class="nav-item flex items-center px-4 py-3 text-white hover:bg-black hover:bg-opacity-20 rounded-lg transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
+                    Configuración
+                </a>
+            </div>
+        </nav>
+        
+        <div class="absolute bottom-0 w-full p-4">
+            <div class="flex items-center text-white">
+                <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Admin</p>
+                    <p class="text-xs opacity-75">admin@ecommerce.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Panel Administrativo</h2>
+                    <p class="text-gray-600">Gestiona tu tienda online desde aquí</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-600 hover:text-gray-900">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                        <span>Salir</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="metric-card p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white text-opacity-80 text-sm">Ventas Totales</p>
+                            <p class="text-2xl font-bold text-white">$2.450.000</p>
+                            <p class="text-white text-opacity-80 text-xs mt-1">+12.5% vs mes anterior</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="dollar-sign" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card-blue p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white text-opacity-80 text-sm">Pedidos</p>
+                            <p class="text-2xl font-bold text-white">156</p>
+                            <p class="text-white text-opacity-80 text-xs mt-1">+8.3% vs mes anterior</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="shopping-bag" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card-green p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white text-opacity-80 text-sm">Clientes</p>
+                            <p class="text-2xl font-bold text-white">1,247</p>
+                            <p class="text-white text-opacity-80 text-xs mt-1">+15.2% vs mes anterior</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="users" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card-purple p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white text-opacity-80 text-sm">Productos</p>
+                            <p class="text-2xl font-bold text-white">89</p>
+                            <p class="text-white text-opacity-80 text-xs mt-1">+5 nuevos esta semana</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="package" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Sales Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Ventas por Mes</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">6M</button>
+                            <button class="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">1A</button>
+                        </div>
+                    </div>
+                    <canvas id="salesChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Top Products -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Productos Más Vendidos</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="smartphone" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">iPhone 15 Pro</p>
+                                    <p class="text-sm text-gray-600">45 vendidos</p>
+                                </div>
+                            </div>
+                            <span class="text-green-600 font-semibold">$1.199.990</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="laptop" class="w-5 h-5 text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">MacBook Pro 16"</p>
+                                    <p class="text-sm text-gray-600">23 vendidos</p>
+                                </div>
+                            </div>
+                            <span class="text-green-600 font-semibold">$2.799.990</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i data-lucide="smartphone" class="w-5 h-5 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Samsung Galaxy S24</p>
+                                    <p class="text-sm text-gray-600">18 vendidos</p>
+                                </div>
+                            </div>
+                            <span class="text-green-600 font-semibold">$999.990</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders and Quick Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Recent Orders -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Pedidos Recientes</h3>
+                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Ver todos</button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">Pedido</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">Cliente</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">Total</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">Estado</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium text-gray-900">#1001</td>
+                                    <td class="py-3 px-4 text-gray-600">Juan Pérez</td>
+                                    <td class="py-3 px-4 text-gray-900">$1.199.990</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completado</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-gray-600">12/06/2025</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium text-gray-900">#1002</td>
+                                    <td class="py-3 px-4 text-gray-600">María García</td>
+                                    <td class="py-3 px-4 text-gray-900">$999.990</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Procesando</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-gray-600">12/06/2025</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium text-gray-900">#1003</td>
+                                    <td class="py-3 px-4 text-gray-600">Carlos López</td>
+                                    <td class="py-3 px-4 text-gray-900">$2.799.990</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Enviado</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-gray-600">11/06/2025</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+                    <div class="space-y-3">
+                        <button class="w-full flex items-center justify-start p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                            <i data-lucide="plus" class="w-5 h-5 text-blue-600 mr-3"></i>
+                            <span class="text-blue-600 font-medium">Agregar Producto</span>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-start p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                            <i data-lucide="eye" class="w-5 h-5 text-green-600 mr-3"></i>
+                            <span class="text-green-600 font-medium">Ver Inventario</span>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-start p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                            <i data-lucide="users" class="w-5 h-5 text-purple-600 mr-3"></i>
+                            <span class="text-purple-600 font-medium">Gestionar Clientes</span>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-start p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-orange-600 mr-3"></i>
+                            <span class="text-orange-600 font-medium">Ver Reportes</span>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-start p-3 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                            <i data-lucide="settings" class="w-5 h-5 text-red-600 mr-3"></i>
+                            <span class="text-red-600 font-medium">Configuración</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Métricas de Performance</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <i data-lucide="activity" class="w-8 h-8 text-blue-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-blue-600">98.5%</p>
+                        <p class="text-sm text-gray-600">Tiempo de Actividad</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <i data-lucide="zap" class="w-8 h-8 text-green-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-green-600">1.2s</p>
+                        <p class="text-sm text-gray-600">Tiempo de Carga</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <i data-lucide="star" class="w-8 h-8 text-purple-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-purple-600">4.8/5</p>
+                        <p class="text-sm text-gray-600">Satisfacción Cliente</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <i data-lucide="trending-up" class="w-8 h-8 text-orange-600"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-orange-600">+23%</p>
+                        <p class="text-sm text-gray-600">Crecimiento Mensual</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Sales Chart
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Ventas ($)',
+                    data: [1200000, 1900000, 1500000, 2500000, 2200000, 2450000],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value / 1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active', 'bg-black', 'bg-opacity-20');
+                });
+                
+                // Add active class to clicked item
+                this.classList.add('active', 'bg-black', 'bg-opacity-20');
+                
+                // Here you would typically load different content based on the clicked item
+                const section = this.getAttribute('href').substring(1);
+                console.log('Navigating to:', section);
+            });
+        });
+
+        // Add some interactivity to quick action buttons
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('Agregar Producto')) {
+                button.addEventListener('click', () => {
+                    alert('Funcionalidad: Agregar Producto\n\nEsta función abriría un formulario para agregar nuevos productos al catálogo.');
+                });
+            } else if (button.textContent.includes('Ver Inventario')) {
+                button.addEventListener('click', () => {
+                    alert('Funcionalidad: Ver Inventario\n\nEsta función mostraría el estado actual del inventario con niveles de stock.');
+                });
+            } else if (button.textContent.includes('Gestionar Clientes')) {
+                button.addEventListener('click', () => {
+                    alert('Funcionalidad: Gestionar Clientes\n\nEsta función abriría la gestión completa de clientes y sus datos.');
+                });
+            } else if (button.textContent.includes('Ver Reportes')) {
+                button.addEventListener('click', () => {
+                    alert('Funcionalidad: Ver Reportes\n\nEsta función mostraría reportes detallados de ventas y analytics.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
