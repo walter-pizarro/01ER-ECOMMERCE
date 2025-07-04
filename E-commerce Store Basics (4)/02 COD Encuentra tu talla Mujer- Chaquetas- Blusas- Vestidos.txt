@@ -1,0 +1,166 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { HelpCircle, Shirt } from "lucide-react";
+
+/* Encuentra tu talla – Prendas superiores Mujer (chaquetas • blusas • vestidos) | v0.4 */
+
+// --- Iconos SVG dedicados ------------------------------------
+// Chaqueta: silueta simple con solapas
+const JacketIcon = (props) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M8 3h8l2 5v13h-4v-6H10v6H6V8l2-5z" />
+    <path d="M10 3v4m4-4v4" />
+  </svg>
+);
+
+// Vestido: triángulo con tirantes
+const DressIcon = (props) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M12 2l3 5H9l3-5z" />
+    <path d="M6 7h12l-1 13H7L6 7z" />
+  </svg>
+);
+
+// ---------------- Tabla de tallas XS ➜ 4‑5XL --------------------
+const TABLE = [
+  { min: 79, max: 82, eu: 34, cl: 36, letter: "XS" },
+  { min: 83, max: 86, eu: 36, cl: 38, letter: "S" },
+  { min: 87, max: 90, eu: 38, cl: 40, letter: "M" },
+  { min: 91, max: 94, eu: 40, cl: 42, letter: "M" },
+  { min: 95, max: 98, eu: 42, cl: 44, letter: "L" },
+  { min: 99, max: 102, eu: 44, cl: 46, letter: "XL" },
+  { min: 103, max: 106, eu: 46, cl: 48, letter: "XL" },
+  { min: 107, max: 112, eu: 48, cl: 50, letter: "XXL" },
+  { min: 113, max: 118, eu: 50, cl: 52, letter: "XXL‑3XL" },
+  { min: 119, max: 124, eu: 52, cl: 54, letter: "3XL" },
+  { min: 125, max: 130, eu: 54, cl: 56, letter: "3‑4XL" },
+  { min: 131, max: 136, eu: 56, cl: 58, letter: "4XL" },
+  { min: 137, max: 142, eu: 58, cl: 60, letter: "4XL" },
+  { min: 143, max: 148, eu: 60, cl: 62, letter: "4‑5XL" },
+];
+
+const MIN_CM = TABLE[0].min;
+const MAX_CM = TABLE[TABLE.length - 1].max;
+
+function findSize(cm) {
+  if (isNaN(cm) || cm <= 0) return { error: "Ingresa una medida válida" };
+  const row = TABLE.find((r) => cm >= r.min && cm <= r.max);
+  return row || { error: "Medida fuera de rango" };
+}
+
+export default function FindMySizeTopsWomen() {
+  const [cm, setCm] = useState("");
+  const result = cm ? findSize(parseFloat(cm)) : null;
+
+  return (
+    <Card className="w-full max-w-md">
+      <CardContent className="p-6 space-y-5">
+        <h3 className="text-xl font-semibold text-center">
+          Encuentra tu talla – Prendas superiores
+        </h3>
+        <p className="text-xs text-center text-muted-foreground">
+          Chaquetas • Blusas • Vestidos
+        </p>
+        <p className="text-xs text-center text-muted-foreground">
+          Ingresa tu contorno de pecho (rango {MIN_CM}-{MAX_CM} cm)
+        </p>
+
+        <TooltipProvider delayDuration={200} disableHoverableContent>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={MIN_CM}
+              max={MAX_CM}
+              step="0.1"
+              placeholder={`Contorno de pecho (${MIN_CM}-${MAX_CM} cm)`}
+              value={cm}
+              onChange={(e) => setCm(e.target.value)}
+              className="flex-1"
+            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-5 h-5 text-gray-500 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-sm leading-snug">
+                Mide alrededor del pecho en el punto más prominente, manteniendo la cinta
+                nivelada y sin apretar. Valores válidos: {MIN_CM}-{MAX_CM} cm.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+
+        {result && (
+          <div className="text-center text-sm">
+            {result.error ? (
+              <span className="text-red-600 font-medium">{result.error}</span>
+            ) : (
+              <div className="space-y-1">
+                <p>
+                  <strong>EU:</strong> {result.eu} &nbsp;| <strong>CL:</strong> {result.cl}
+                </p>
+                <p>
+                  <strong>Letra:</strong> {result.letter}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <Button
+          className="w-full mt-2"
+          disabled={!result || result.error}
+          onClick={() => {
+            if (result && !result.error) {
+              window.dispatchEvent(new CustomEvent("size:select", { detail: result }));
+            }
+          }}
+        >
+          Usar talla sugerida
+        </Button>
+
+        <div
+          className="flex justify-center gap-4 mt-4 text-gray-400"
+          aria-label="Tipos de prenda"
+        >
+          <JacketIcon className="w-6 h-6" aria-label="Chaqueta" />
+          <Shirt className="w-6 h-6" aria-label="Blusa" />
+          <DressIcon className="w-6 h-6" aria-label="Vestido" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --------------------------- Dev tests ---------------------------
+if (process.env.NODE_ENV === "development") {
+  const assert = (cond, msg) => {
+    if (!cond) console.error(msg);
+  };
+  assert(findSize(85).eu === 36, "85 cm → EU 36 (S)");
+  assert(findSize(145).cl === 62, "145 cm → CL 62 (4‑5XL)");
+  assert(findSize(70).error, "70 cm fuera de rango debe dar error");
+}

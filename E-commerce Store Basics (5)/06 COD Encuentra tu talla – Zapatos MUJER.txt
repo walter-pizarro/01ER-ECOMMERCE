@@ -1,0 +1,96 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { Footprints, HelpCircle } from "lucide-react";
+
+/* Encuentra tu talla – Zapatos Mujer (EU ↔ longitud pie) | v0.1 */
+
+// Tabla simplificada – cada entrada cubre un rango de longitud del pie (cm)
+const TABLE = [
+  { min: 22.0, max: 22.5, eu: 35, us: "4.5‑5", uk: "2.5‑3" },
+  { min: 22.6, max: 23.0, eu: 36, us: "5.5", uk: "3.5" },
+  { min: 23.1, max: 23.5, eu: 37, us: "6.5", uk: "4.5" },
+  { min: 23.6, max: 24.0, eu: 38, us: "7.5", uk: "5.5" },
+  { min: 24.1, max: 24.5, eu: 39, us: "8.5", uk: "6.5" },
+  { min: 24.6, max: 25.0, eu: 40, us: "9.5", uk: "7.5" },
+  { min: 25.1, max: 25.5, eu: 41, us: "10.5", uk: "8.5" },
+  { min: 25.6, max: 26.0, eu: 42, us: "11", uk: "9" },
+];
+
+const MIN_CM = 22.0;
+const MAX_CM = 26.0;
+
+function findSize(cm) {
+  const row = TABLE.find((r) => cm >= r.min && cm <= r.max);
+  return row || null;
+}
+
+export default function FindMySizeShoesWomen() {
+  const [cm, setCm] = useState(23.5);
+  const result = findSize(parseFloat(cm));
+
+  return (
+    <Card className="w-full max-w-md">
+      <CardContent className="p-6 space-y-5">
+        <h3 className="text-xl font-semibold text-center">
+          Encuentra tu talla – Zapatos MUJER
+        </h3>
+        <p className="text-sm text-center text-gray-600">
+          Ingresa la longitud de tu pie en centímetros (rango {MIN_CM} – {MAX_CM} cm) y obtén tu talla UE junto a equivalencias.
+        </p>
+
+        <div className="flex gap-2 items-center">
+          <Input
+            type="number"
+            value={cm}
+            onChange={(e) => setCm(e.target.value)}
+            min={MIN_CM}
+            max={MAX_CM}
+            step={0.1}
+            className="flex-1"
+            placeholder="Long. pie (cm)"
+          />
+          <TooltipProvider delayDuration={200} disableHoverableContent>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-5 h-5 text-gray-500 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-sm leading-snug">
+                Coloca tu pie sobre una hoja y marca del talón al dedo más largo. Mide esa distancia con una regla.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        {result ? (
+          <div className="text-center space-y-1">
+            <p className="text-lg font-bold">EU: {result.eu}</p>
+            <p className="text-sm text-gray-600">US: {result.us} • UK: {result.uk}</p>
+          </div>
+        ) : (
+          <p className="text-center text-red-600 text-sm">Valor fuera de rango</p>
+        )}
+
+        <div className="flex justify-center gap-3 mt-4 text-gray-400" aria-label="Iconos calzado">
+          <Footprints className="w-6 h-6" />
+          <Footprints className="w-6 h-6" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Dev tests ---
+if (process.env.NODE_ENV === "development") {
+  const assert = (cond, msg) => { if (!cond) console.error(msg); };
+  assert(findSize(23.4).eu === 37, "23.4 cm → EU 37");
+  assert(findSize(25.8).eu === 42, "25.8 cm → EU 42");
+  assert(findSize(21.0) === null, "21 cm fuera de rango");
+}
