@@ -1,0 +1,113 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
+
+/* Encuentra tu talla de Streetwear – v0.8 */
+
+const TABLE = [
+  { min: 76, max: 80, eu: 32, cl: 34, letter: "XS" },
+  { min: 81, max: 86, eu: 34, cl: 36, letter: "S" },
+  { min: 87, max: 92, eu: 38, cl: 40, letter: "M" },
+  { min: 93, max: 98, eu: 40, cl: 42, letter: "L" },
+  { min: 99, max: 104, eu: 44, cl: 46, letter: "XL" },
+  { min: 105, max: 110, eu: 46, cl: 48, letter: "XXL" },
+];
+
+const MIN_CM = TABLE[0].min;
+const MAX_CM = TABLE[TABLE.length - 1].max;
+
+function findSize(cm) {
+  if (isNaN(cm) || cm <= 0) return { error: "Ingresa una medida válida" };
+  const row = TABLE.find((r) => cm >= r.min && cm <= r.max);
+  return row || { error: "Medida fuera de rango" };
+}
+
+export default function FindMySizePolera() {
+  const [cm, setCm] = useState("");
+  const result = cm ? findSize(parseFloat(cm)) : null;
+
+  return (
+    <Card className="w-full max-w-md">
+      <CardContent className="p-6 space-y-5">
+        <h3 className="text-xl font-semibold text-center">
+          Encuentra tu talla de Streetwear
+        </h3>
+        <p className="text-xs text-center text-muted-foreground">
+          Ingresa tu contorno de pecho en centímetros (rango {MIN_CM}‑{MAX_CM} cm) para
+          obtener tu talla CL y su equivalencia internacional.
+        </p>
+
+        <TooltipProvider delayDuration={200} disableHoverableContent>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={MIN_CM}
+              max={MAX_CM}
+              step="0.1"
+              placeholder={`Contorno de pecho (${MIN_CM}-${MAX_CM} cm)`}
+              value={cm}
+              onChange={(e) => setCm(e.target.value)}
+              className="flex-1"
+            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-5 h-5 text-gray-500 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-sm leading-snug">
+                Mide alrededor del pecho en el punto más prominente, manteniendo la cinta
+                nivelada y sin apretar. Valores válidos: {MIN_CM}‑{MAX_CM} cm.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+
+        {result && (
+          <div className="text-center text-sm">
+            {result.error ? (
+              <span className="text-red-600 font-medium">{result.error}</span>
+            ) : (
+              <div className="space-y-1">
+                <p>
+                  <strong>EU:</strong> {result.eu} &nbsp;| <strong>CL:</strong> {result.cl}
+                </p>
+                <p>
+                  <strong>Letra:</strong> {result.letter}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <Button
+          className="w-full mt-2"
+          disabled={!result || result.error}
+          onClick={() => {
+            if (result && !result.error) {
+              window.dispatchEvent(new CustomEvent("size:select", { detail: result }));
+            }
+          }}
+        >
+          Usar talla sugerida
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Dev tests
+if (process.env.NODE_ENV === "development") {
+  const assert = (cond, msg) => {
+    if (!cond) console.error(msg);
+  };
+  assert(findSize(84).eu === 34, "84 cm → EU 34 (S)");
+  assert(findSize(110).cl === 48, "110 cm → CL 48 (XXL)");
+  assert(findSize(60).error, "60 cm fuera de rango debe dar error");
+}
