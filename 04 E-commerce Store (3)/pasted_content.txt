@@ -1,0 +1,142 @@
+Correcciones y mejoras del Sistema Profesional de Gestión de Productos para TIENDAS TRESMAS – Versión Estándar
+1. Administración Centralizada
+El sistema será administrado íntegramente por TresMas SpA, quien ejercerá control general sobre todo el ecosistema e-commerce. El acceso maestro será único, mediante usuario y contraseña exclusiva de TresMas.cl, garantizando la administración total de todas las tiendas bajo su dominio.
+________________________________________
+2. Planes de Tienda y Proceso de Contratación
+TIENDAS TRESMAS ofrece planes preconfigurados que serán habilitados manualmente por el administrador de acuerdo al servicio contratado por el cliente:
+PLANES DISPONIBLES (según archivo "PLANES TIENDAS TRESMAS JUNIO 2025.txt"):
+•	WEB E-Commerce ONE PYME
+•	WEB E-Commerce TWO PREMIUM
+•	WEB E-Commerce THREE PLATINUM
+Datos requeridos para contratar un plan:
+•	Nombre y RUT del Representante Legal
+•	Nombre, RUT y Giro de la Empresa
+•	Dirección (Región, Ciudad, Calle, Número, Detalle)
+•	Teléfono de contacto y correos corporativos (hasta 2)
+•	Logotipos (hasta 3 en formatos JPG, PNG, PDF o AI)
+•	Colores corporativos (nombre, Pantone, código)
+•	Tipo de tienda, cargo de contacto, dirección de despacho
+•	WhatsApp y número de teléfono
+•	Datos de tarjeta de crédito para pagos recurrentes
+Cada cliente podrá administrar múltiples tiendas y delegar niveles de acceso a su equipo según funciones (administración, ventas, marketing, etc.).
+________________________________________
+3. Tienda Pre-Cargada y Carga Masiva Inteligente
+Tienda Pre-Cargada
+Se incorporará una tienda base con productos publicitarios predefinidos y editables según archivo:
+•	productos publicitarios 2025_V2.xlsx de AQUI TU LOGO
+ Carga Masiva de Productos
+Se habilita un sistema de carga y actualización masiva a través de Google Sheets, con integración vía n8n o Make, lo cual permitirá:
+•	Subir productos desde planillas dinámicas
+•	Enlace con Google Drive para imágenes
+•	Validación técnica y semántica de los datos
+•	Generación de códigos únicos y automatización de cálculos
+•	Carga por lotes hasta 300 productos sin costo con asistencia TRESMAS
+________________________________________
+4. Módulos Especializados
+📏 Encuentra tu Talla (archivo: "Encuentra tu Tallas.zip")
+Sistema visual y técnico que permite a los usuarios encontrar la talla correcta según género, edad, tipo de prenda y equivalencia internacional. Se adapta dinámicamente a la ficha del producto.
+⚠️ Sistema de Costos de Señaléticas (archivo: "Sistema de Gestión de Costos de Señaléticas.txt")
+Módulo de costeo técnico y contable para señaléticas personalizadas. Permite calcular precios por tipo de material, medidas, impresión, instalación, y aplicar márgenes definidos por lote o cliente.
+________________________________________
+5. Funcionalidades Técnicas Implementadas
+Cálculos Automáticos:
+•	Precio costo en CLP y cálculo automático del valor en USD
+•	% utilidad calculado automáticamente
+•	Impuesto del 19% aplicado
+•	% descuento mostrado como ahorro en CLP
+•	Botón "Cotizar" para productos sin stock
+Información del Producto:
+•	Nombre del producto con validación
+•	Categoría/Subcategoría dinámicas
+•	Valor CLP y USD automático
+•	Código proveedor y SKU generado
+•	Campos técnicos dinámicos por categoría
+•	Marca, descripción, código OEM, dimensiones, peso, capacidad
+•	Código interno generado como AQTL+[CódigoProveedor]+[Año]
+Ficha Técnica Dinámica:
+•	Sistema de campos técnicos visibles solo si contienen información
+•	Campos configurables: tamaño, material, presentación, potencia, origen, etc.
+Gestión Publicitaria y de Producción:
+•	Cantidad mínima para impresión: 250 unidades
+•	Tipos de impresión: Serigrafía, Transfer, Bordado, Sublimación, Láser
+•	Sistema de cotización que permite adjuntar logotipo, seleccionar tipo de impresión, y definir lugar de marcaje
+Condiciones Comerciales:
+•	Descuento automático para compras > $400.000 + IVA
+•	Despacho gratuito en Santiago por compras > $250.000 + IVA
+•	Acceso a precios y cotización solo disponible para usuarios registrados con validación de RUT y reCAPTCHA
+Gestión de Imágenes y Código:
+•	Generación automática de Código QR y Código de Barras
+•	Impresión directa de códigos desde el sistema
+•	Validación de imágenes mediante módulo: Proyecto_Validador_Imagenes_Walcom_COMPLETO.zip
+________________________________________
+6. Base de Datos y API REST
+Estructura Técnica:
+•	Más de 15 tablas especializadas
+•	Relaciones entidad-entidad normalizadas
+•	Sistema de materiales, marcas y proveedores
+•	Campos técnicos por categoría de producto
+ API REST Completa:
+•	Endpoints para CRUD completo
+•	Cálculos automáticos vía backend
+•	Generación de PDFs de cotización
+•	Campos técnicos integrados a la API
+________________________________________
+7. Funcionalidades Avanzadas Confirmadas
+•	Edición y eliminación segura con cascada
+•	Backend validado y 100% funcional
+•	Vista personalizada por rol de usuario
+•	Frontend adaptable y responsive
+•	Integración con chatbot IA contextual según producto
+________________________________________
+8. Módulos Complementarios Recomendados (Implementados)
+1. Módulo de Facturación Electrónica SII
+•	Generación automática de boletas, facturas y notas de crédito
+•	Integración con API DTE del SII
+•	Asociado a las ventas del carrito y cotizaciones
+2. Gestión de Inventario Multi-Almacén
+•	Control de stock por ubicación física
+•	Movimiento entre bodegas
+•	Alertas por bajo stock
+3. Módulo de Logística y Despachos
+•	Integración con Chilexpress, Starken, BlueExpress, CorreosChile
+•	Cálculo de tarifas por comuna en tiempo real
+•	Generación de tracking y seguimiento online
+4. Centro de Soporte y Chatbot IA
+•	Sistema de tickets con historial
+•	Respuestas IA por producto o categoría
+•	Clasificación por tipo de solicitud (ventas, despacho, técnico, etc.)
+5. Panel de Reportes Comerciales
+•	Dashboard con ventas, márgenes y ranking de productos
+•	Descarga de reportes en PDF y Excel
+6. Módulo de Auditoría y Roles
+•	Gestión de permisos por usuario
+•	Registro de cada acción (edición, eliminación, login, etc.)
+________________________________________
+9. Proyecto
+A continuación se presenta el listado de todos los módulos a implementar en esta plataforma. El avance de cada uno será documentado y actualizado progresivamente durante las siguientes fases del proyecto:
+•	Sistema de productos profesionales
+•	Fichas técnicas dinámicas
+•	Cotizaciones automáticas
+•	Cálculos y descuentos
+•	Integración de tienda precargada
+•	Encuentra tu talla
+•	Sistema de señaléticas
+•	Validación de imágenes
+•	Facturación electrónica SII
+•	Gestión de inventario multi-almacén
+•	Logística y despacho
+•	Centro de soporte y chatbot
+•	Reportes comerciales
+•	Auditoría interna y gestión de roles
+________________________________________
+10. Beneficios Generales
+1.	Sistema profesional adaptable a múltiples industrias
+2.	Alta escalabilidad para tiendas múltiples bajo administración central
+3.	Automatización integral de procesos de gestión de productos
+4.	Gestión especializada en productos gráficos y señaléticas
+5.	Interfaz profesional, moderna y responsiva
+6.	Soporte completo para ventas personalizadas, cotización y seguimiento
+7.	Integración legal y logística nativa (SII + despachos)
+8.	Control de inventario profesional multi-sucursal
+9.	Reportes estratégicos y trazabilidad por usuario
+
